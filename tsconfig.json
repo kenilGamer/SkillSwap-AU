@@ -30,6 +30,6 @@
         "**/*.tsx", 
         ".next/types/**/*.ts",
         "server.ts" 
-    ],
+, "src/components/category.jsx"    ],
     "exclude": ["node_modules"]
 }

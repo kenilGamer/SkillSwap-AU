@@ -18,34 +18,29 @@ import { MdDelete, MdOutlineReport } from 'react-icons/md';
 
 export default function ChatCard({ data }: { data: any }) {
   const searchParams = useSearchParams();
-  const sender = searchParams?.get('sender');
   const [chats, setChats] = useState();
+  const sender = searchParams?.get('sender');
 
-  useEffect(() => {
-    if (!sender) return;
 
-    const fetchChats = async () => {
-      try {
-        const response = await axios.get(`/api/chat/chats`, {
-          params: { sender },
-        });
-        console.log('Fetched chats:', response.data);
-        setChats(response.data.data[0]);
-        if (Array.isArray(response.data.data)) {
-          // Update the global store instead of local state.
-          chatStore.setChats(response.data.data);
-        } else {
-          console.error('Unexpected data format:', response.data);
-          chatStore.setChats([]);
-        }
-      } catch (error) {
-        console.error('Error fetching chats:', error);
-        chatStore.setChats([]);
-      }
-    };
 
-    fetchChats();
-  }, [sender]);
+useEffect(() => {
+  const fetchChats = async () => {
+    try {
+      const response = await axios.get(`/api/users/users`, {
+        params: { sender },
+      });
+
+      if (Array.isArray(response.data.data)) {
+        setChats(response.data.data);
+      } 
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  fetchChats();
+}, [sender]); // ✅ Added 'sender' to dependencies
+
 
   // Determine the chat user's name from the passed data prop.
   const chatUser = data?.username || 'Unknown User';
@@ -54,7 +49,7 @@ export default function ChatCard({ data }: { data: any }) {
     <div
       onClick={() => {
         console.log('Clicked Chat ID:', chatUser._id);
-        chatStore.setOpenedChat(chats._id);
+        chatStore.setOpenedChat(chats?._id);
       }}
       className="mx-3 flex h-16 cursor-pointer items-center gap-2 rounded-lg border bg-accent p-2 shadow-sm"
     >

@@ -32,6 +32,10 @@ const postSchema: Schema = new Schema<IPost>(
             type: String,
             default: '',
         },
+        category: {
+          type: String,
+          required: true,  
+        },
         star: {
             type: Number,
             default: 0,

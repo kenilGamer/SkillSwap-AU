@@ -16,7 +16,7 @@ export default function Profile({ user, currentUserId }: { user: IUser; currentU
             try {
                 const response = await axios.get(`/api/follow/${currentUserId}`);
                 console.log("Followers API Response:", response.data);
-                setFollowers(response.data.followers);
+
             } catch (error) {
                 console.error("Error fetching followers:", error);
             }

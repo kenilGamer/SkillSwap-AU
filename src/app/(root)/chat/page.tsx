@@ -1,45 +1,64 @@
-'use client';
-import { Input } from '@/components/shadcn/ui/input';
-import { useEffect, useState } from 'react';
-import { FaRegBell } from 'react-icons/fa';
-import { MdSearch } from 'react-icons/md';
-import ChatCard from './ChatCard';
-import ChatPanel from './ChatPanel';
-import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
+'use client'
 
+import { Input } from '@/components/shadcn/ui/input'
+import { useEffect, useState } from 'react'
+import { FaRegBell } from 'react-icons/fa'
+import { MdSearch } from 'react-icons/md'
+import ChatCard from './ChatCard'
+import ChatPanel from './ChatPanel'
+import axios from 'axios'
+import { useSearchParams } from 'next/navigation'
 
 export default function Chat() {
-  const [showUnsavedChats, setShowUnsavedChats] = useState(false);
-  const [chats, setChats] = useState([]);
-  const searchParams = useSearchParams();
+  const [showUnsavedChats, setShowUnsavedChats] = useState(false)
+  const [chats, setChats] = useState<any[]>([])
+  const [filteredChats, setFilteredChats] = useState<any[]>([])
+  const [query, setQuery] = useState('')
+  const searchParams = useSearchParams()
+  const sender = searchParams?.get('sender')
 
-  const sender = searchParams?.get('sender');
-
-
+  // Fetch chats on mount (and when sender changes)
   useEffect(() => {
-
     const fetchChats = async () => {
       try {
-        const response = await axios.get(`/api/users/users`,{
+        const response = await axios.get(`/api/users/users`, {
           params: { sender },
-        });
-   
-        
+        })
+
         if (Array.isArray(response.data.data)) {
-          setChats(response.data.data); // ✅ Ensure it's an array before setting state
+          setChats(response.data.data)
+          setFilteredChats(response.data.data)
         } else {
-          console.error('Unexpected data format:', response.data);
-          setChats([]); // Fallback to empty array
+          console.error('Unexpected data format:', response.data)
+          setChats([])
+          setFilteredChats([])
         }
       } catch (error) {
-        console.error('Error fetching chats:', error);
-        setChats([]); // Handle errors gracefully
+        console.error('Error fetching chats:', error)
+        setChats([])
+        setFilteredChats([])
       }
-    };
-  
-    fetchChats();
-  }, []);
+    }
+
+    fetchChats()
+  }, [sender])
+
+  // Filter chats based on the query whenever query or chats change
+  useEffect(() => {
+    if (!query) {
+      setFilteredChats(chats)
+    } else {
+      setFilteredChats(
+        chats.filter((chat) => {
+          // Adjust this logic based on your chat data structure.
+          // For example, if chat has a 'name' or 'message' field:
+          const searchField = `${chat.name || ''} ${chat.message || ''}`.toLowerCase()
+          return searchField.includes(query.toLowerCase())
+        })
+      )
+    }
+  }, [query, chats])
+
   return (
     <div className="flex grow overflow-hidden">
       {/* Left Sidebar: Chat List */}
@@ -47,7 +66,12 @@ export default function Chat() {
         {/* Search Bar */}
         <div className="relative mx-3">
           <MdSearch className="absolute left-2 top-1/2 -translate-y-1/2 text-black/60" />
-          <Input className="pl-8" placeholder="Search..." />
+          <Input
+            className="pl-8"
+            placeholder="Search..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </div>
         {/* Header with Title and Notification Icon */}
         <div className="flex items-center justify-between px-4 py-3">
@@ -68,9 +92,7 @@ export default function Chat() {
         <div className="grow overflow-hidden">
           <div className={`flex h-full transition duration-500 ${showUnsavedChats && 'translate-x-[-100%]'}`}>
             <div className="flex h-full w-full shrink-0 flex-col gap-3 overflow-auto">
-           
-
-              {chats.map((chat: any, i: number) => (
+              {filteredChats.map((chat, i) => (
                 <ChatCard key={i} data={chat} />
               ))}
             </div>
@@ -80,5 +102,5 @@ export default function Chat() {
       {/* Right Side: Chat Panel */}
       <ChatPanel />
     </div>
-  );
+  )
 }

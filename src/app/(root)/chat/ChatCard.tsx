@@ -8,13 +8,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/ui/dropdown-menu';
 import chatStore from '@/store/chat.store';
-import userStore from '@/store/user.store';
+
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { MdDelete, MdOutlineReport } from 'react-icons/md';
-import { useSnapshot } from 'valtio';
+
 
 export default function ChatCard({ data }: { data: any }) {
   const searchParams = useSearchParams();

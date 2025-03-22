@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import dbConnect from '@/helpers/dbConnect';
+import dbConnect from '@/helpers/dbconnect';
 import User from '@/models/user.model';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

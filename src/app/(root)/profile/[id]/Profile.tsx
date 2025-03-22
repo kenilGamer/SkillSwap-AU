@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 
 export default function Profile({ user, currentUserId }: { user: IUser; currentUserId: string }) {
     const [isFollowing, setIsFollowing] = useState(user?.followers?.includes(currentUserId) ?? false)
-    const [followers, setFollowers] = useState(user?.followers?.length?? 0);
+    // const [followers, setFollowers] = useState(user?.followers?.length?? 0);
     console.log(currentUserId);
     
     useEffect(() => {

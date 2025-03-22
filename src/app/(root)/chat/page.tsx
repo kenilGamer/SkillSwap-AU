@@ -5,7 +5,6 @@ import { FaRegBell } from 'react-icons/fa';
 import { MdSearch } from 'react-icons/md';
 import ChatCard from './ChatCard';
 import ChatPanel from './ChatPanel';
-import useSWR from 'swr';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 
@@ -14,9 +13,9 @@ export default function Chat() {
   const [showUnsavedChats, setShowUnsavedChats] = useState(false);
   const [chats, setChats] = useState([]);
   const searchParams = useSearchParams();
-  const postId = searchParams?.get('postId');
+
   const sender = searchParams?.get('sender');
-  const receiver = searchParams?.get('receiver');
+
 
   useEffect(() => {
 
@@ -41,11 +40,6 @@ export default function Chat() {
   
     fetchChats();
   }, []);
-  
-  
-
-
- 
   return (
     <div className="flex grow overflow-hidden">
       {/* Left Sidebar: Chat List */}

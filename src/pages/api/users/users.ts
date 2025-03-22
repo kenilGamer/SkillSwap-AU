@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/helpers/dbconnect';
-import Chat from '@/models/Chat.model';
 import User from '@/models/user.model';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

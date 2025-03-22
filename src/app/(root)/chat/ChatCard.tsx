@@ -17,10 +17,8 @@ import { MdDelete, MdOutlineReport } from 'react-icons/md';
 import { useSnapshot } from 'valtio';
 
 export default function ChatCard({ data }: { data: any }) {
-  const { user } = useSnapshot(userStore);
   const searchParams = useSearchParams();
   const sender = searchParams?.get('sender');
-  const receiver = searchParams?.get('receiver');
   const [chats, setChats] = useState();
 
   useEffect(() => {

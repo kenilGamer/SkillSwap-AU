@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={inter.className}>
+            <body suppressHydrationWarning={true} cz-shortcut-listen="true" className={inter.className}>
                 <ProgressBar />
                 <Toaster richColors />
                 {children}

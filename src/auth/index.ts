@@ -1,20 +1,24 @@
 import { isValidObjectId } from 'mongoose'
-import { cookies } from 'next/headers'
-import { validate } from 'uuid'
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/auth/[...nextauth]/options';
 import Session from './session.model'
 
 interface IAuthConstructor {
     dbconnect: () => Promise<any>
-    session_cookie_name?: string
 }
 
 class Auth {
     private dbconnect: () => Promise<void>
-    private session_cookie_name: string
 
     constructor(options: IAuthConstructor) {
         this.dbconnect = options.dbconnect
-        this.session_cookie_name = options.session_cookie_name || 'session_id'
+    }
+
+    // Helper to get current user using NextAuth session
+    async getCurrentUser() {
+        const session = await getServerSession(authOptions);
+        if (!session || !session.user) return { error: 'Not authenticated' };
+        return { user: session.user };
     }
 
     async createSession({ userId, expiresIn }: { userId: string; expiresIn: number }) {
@@ -22,50 +26,19 @@ class Auth {
         try {
             await this.dbconnect()
             const session = await Session.create({ user: userId, expiresAt: Date.now() + expiresIn })
-            cookies().set(this.session_cookie_name, session._id, {
-                httpOnly: true,
-                expires: Date.now() + expiresIn,
-                secure: process.env.NODE_ENV === 'production',
-            })
             return { success: 'Session created successfully', data: session }
         } catch (error) {
+            console.error("Couldn't create Session", error);
             return { error: "Couldn't create Session" }
         }
     }
 
     async getCurrentSession() {
-        return await this.getCurrentUser({ withSession: true })
-    }
-
-    async getCurrentUser(option: { withSession: boolean } | undefined = undefined): Promise<any> {
-        const session_id = cookies().get(this.session_cookie_name)
-        if (!session_id || !validate(session_id.value)) return { error: 'Invalid Session ID' }
-        try {
-            await this.dbconnect()
-            const session = await Session.findById(session_id.value, { __v: false }).populate('user', {
-                __v: false,
-            })
-            if (!session) return { error: 'Session not found' }
-            if (session.expiresAt <= new Date() || !session.user) {
-                await session.deleteOne()
-                return { error: 'Session has expired' }
-            }
-            return JSON.parse(JSON.stringify(option?.withSession ? { session } : { user: session.user }))
-        } catch (error) {
-            return { error: "Couldn't get Session" }
-        }
+        return await this.getCurrentUser()
     }
 
     async deleteCurrentUsersSession() {
-        const session_id = cookies().get(this.session_cookie_name)
-        if (!session_id || !validate(session_id.value)) return { error: 'Invalid Session ID' }
-        try {
-            await this.dbconnect()
-            await Session.deleteOne({ _id: session_id.value })
-            return { success: 'Deleted current users session' }
-        } catch (error) {
-            return { error: "Couldn't delete current users session" }
-        }
+        return { error: 'Session ID is no longer used' }
     }
 
     async deleteCurrentUsersAllSessions() {

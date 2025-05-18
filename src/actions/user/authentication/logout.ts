@@ -5,7 +5,8 @@ import { cookies } from 'next/headers'
 
 export default async function Logout() {
     try {
-        cookies().delete('session_id')
+        const cookieStore = await cookies()
+        cookieStore.delete('session_id')
         await auth.deleteCurrentUsersSession()
         return { success: 'Successfully logged out' }
     } catch (error) {

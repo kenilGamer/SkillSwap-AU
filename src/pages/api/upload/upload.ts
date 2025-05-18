@@ -13,15 +13,16 @@ export const config = {
 // ✅ Async function to handle file parsing
 const parseForm = (req: NextApiRequest): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
   return new Promise((resolve, reject) => {
+    const uploadDir = path.join(process.cwd(), 'public/uploads');
     const form = formidable({
-      uploadDir: path.join(process.cwd(), 'public/uploads'), // Save to /public/uploads
+      uploadDir,
       keepExtensions: true,
       multiples: false, // Allow single file only (change to `true` for multiple)
     });
 
     // ✅ Ensure the upload directory exists
-    if (!fs.existsSync(form?.uploadDir)) {
-      fs.mkdirSync(form?.uploadDir, { recursive: true });
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
 
     form.parse(req, (err, fields, files) => {

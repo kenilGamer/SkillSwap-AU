@@ -9,6 +9,7 @@ export default async function layout({ children }: { children: React.ReactNode }
     const res = await auth.getCurrentUser()
     // TEMP: Show a message instead of redirecting for unauthenticated users
     if (res.error) {
+        console.log(res.error)
         return (
             <div className="flex h-screen w-screen items-center justify-center flex-col">
                 <Navbar />
@@ -20,7 +21,7 @@ export default async function layout({ children }: { children: React.ReactNode }
     return (
         <div className="flex h-screen w-screen">
             <Navbar />
-            <SetUser user={formatUser(res.user) as IUser} />
+            {res.user && <SetUser user={formatUser(res.user as any)} />}
             {children}
         </div>
     )

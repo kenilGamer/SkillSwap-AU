@@ -79,7 +79,7 @@ export default function NewPostForm() {
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content
-              className="min-w-[200px] bg-white rounded-md shadow-md p-2"
+              className="min-w-[200px] bg-white rounded-md shadow-md p-2 z-[1000]"
               sideOffset={5}
             >
               <DropdownMenu.Item

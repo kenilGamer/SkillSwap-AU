@@ -22,7 +22,15 @@ const userSchema = new Schema<IUser>(
     username: { type: String, unique: true, trim: true, lowercase: true, required: true },
     email: { type: String, trim: true, lowercase: true, required: true, unique: true },
     skills: { type: [String], default: [] },
-    password: { type: String, required: true },
+    password: { 
+      type: String, 
+      required: function (this: IUser) { 
+        // Only require password if not a Google user (customize as needed)
+        // For example, if you have a 'provider' field:
+        // return this.provider !== 'google';
+        return false; // For now, just make it optional for all
+      } 
+    },
     bio: { type: String, default: '' },
     country: { type: String, default: '' },
     website: { type: String, default: '' },

@@ -40,10 +40,10 @@ export default async function Page() {
         <div className="flex">
           <Dialog>
             <DialogTrigger asChild>
-              <Button>New Post</Button>
+              <Button >New Post</Button>
             </DialogTrigger>
             <DialogContent className="p-0">
-              <DialogTitle>New Post</DialogTitle>
+              <DialogTitle className='text-2xl font-semibold text-gray-800 p-3 text-center'>New Post</DialogTitle>
               <NewPostForm />
             </DialogContent>
           </Dialog>

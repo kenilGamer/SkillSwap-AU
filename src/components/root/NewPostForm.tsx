@@ -37,11 +37,11 @@ export default function NewPostForm() {
   }
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-50 rounded-lg shadow-md flex flex-col gap-5">
+    <div className="max-w-xl mx-auto p-6 bg-gray-50 rounded-xl shadow-md flex flex-col gap-5">
       <h2 className="text-2xl font-semibold text-gray-800">Post Your Requirement</h2>
       
       {/* Skills Section */}
-      <div className="space-y-2">
+      <div className="space-y-1">
         <div>
           <Label>Skills</Label>
           {error?.requiredSkills && <span className="text-xs text-red-500">{error.requiredSkills}</span>}
@@ -55,7 +55,7 @@ export default function NewPostForm() {
       </div>
 
       {/* Description Section */}
-      <div className="space-y-2">
+      <div className="space-y-1">
         <div>
           <Label>Description</Label>
           {error?.description && <span className="text-xs text-red-500">{error.description}</span>}
@@ -69,7 +69,7 @@ export default function NewPostForm() {
       </div>
 
       {/* Category Dropdown */}
-      <div className="space-y-2">
+      <div className="space-y-1">
         <Label>Category</Label>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild value={category}>
@@ -108,7 +108,7 @@ export default function NewPostForm() {
       {/* Submit Button */}
       <Button
         onClick={onSubmit}
-        className="mt-4 w-full px-8 py-3 bg-black text-white rounded-full"
+        className="mt-4 w-full px-8 py-3 bg-black font-semibold text-md hover:scale-105 transition-all duration-300 text-white rounded-full"
       >
         Post Requirement
       </Button>

@@ -17,8 +17,6 @@ export interface IPropRequirementCard extends IPost {
  
 export default function RequirementCard({ data, myPost }: { data: IPropRequirementCard; myPost?: boolean }) {
   const router = useRouter()
- console.log(data);
- 
   const handleChat = () => {
     // Navigate to the chat page.
     // You can pass the post ID or any other parameter as needed.

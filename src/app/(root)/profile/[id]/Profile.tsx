@@ -8,14 +8,11 @@ import { useEffect } from 'react'
 
 export default function Profile({ user, currentUserId }: { user: IUser; currentUserId: string }) {
     const [isFollowing, setIsFollowing] = useState(user?.followers?.includes(currentUserId) ?? false)
-    // const [followers, setFollowers] = useState(user?.followers?.length?? 0);
-    console.log(currentUserId);
     
     useEffect(() => {
         const fetchFollowers = async () => {
             try {
                 const response = await axios.get(`/api/follow/${currentUserId}`);
-                console.log("Followers API Response:", response.data);
 
             } catch (error) {
                 console.error("Error fetching followers:", error);
@@ -29,7 +26,6 @@ const handleFollow = async () => {
     try {
         const response = await axios.post(`/api/follow/${user._id}`, { currentUserId });
 
-        console.log('Follow/Unfollow Response:', response.data);
 
         // Toggle following state
         setIsFollowing((prev) => !prev);

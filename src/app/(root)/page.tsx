@@ -1,13 +1,11 @@
 import { Button } from '@/components/Button'
-import RequirementCard, { IPropRequirementCard } from '@/components/root/RequirementCard'
 import NewPostForm from '../../components/root/NewPostForm'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/shadcn/ui/dialog'
 import getPosts from '@/actions/data/getPosts'
-import dynamic from 'next/dynamic'
-import { redirect } from 'next/navigation'
+
 import auth from '@/auth/auth'
 import SearchablePosts from '@/components/SearchablePosts'
-
+import { redirect } from 'next/navigation'
 
 export default async function Page() {
   let posts = [];
@@ -15,20 +13,20 @@ export default async function Page() {
   try {
     const res = await auth.getCurrentUser()
     if (res.error) {
-      alert(`Redirecting to login from page: ${res.error}`)
       redirect('/login')
     }
     const result = await getPosts()
-    console.log(result)
     posts = result.posts
     error = result.error
     if (error) {
-      alert(`Redirecting to login from page: ${error}`)
-      redirect('/signin')
+      // Optionally log the error for debugging
+      console.log(`Redirecting to login from page: ${error}`)
+      // redirect('/login')
     }
   } catch (err) {
-    alert(`Redirecting to login from page: ${err}`)
-    redirect('/signin')
+    // Optionally log the error for debugging
+    console.log(`Redirecting to login from page: ${err}`)
+    // redirect('/login')
   }
   return (
     <div className="flex w-full gap-5 overflow-hidden p-5 xl:p-7">

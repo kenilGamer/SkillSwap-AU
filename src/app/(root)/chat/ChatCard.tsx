@@ -37,7 +37,7 @@ useEffect(() => {
         setChats(response.data.data);
       } 
     } catch (error) {
-      console.log('error', error);
+      console.error('error', error);
     }
   };
 
@@ -83,7 +83,6 @@ useEffect(() => {
     }
   };
 
-  console.log("ChatCard data:", data);
 
   return (
     <div

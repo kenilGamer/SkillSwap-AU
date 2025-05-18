@@ -16,10 +16,9 @@ export default async function postRequirement(data: z.infer<typeof postValidatio
 
   try {
     // Create the post with all validated fields and add the owner's ID
-    await Post.create({ ...value.data, owner: res.user._id })
+    await Post.create({ ...value.data, owner: (res.user as any)._id })
     return { success: 'Requirement has been posted' }
   } catch (error) {
-    console.log(error)
-    return { error: 'Something went wrong' }
+    return { message: 'Something went wrong', error: error }
   }
 }

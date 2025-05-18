@@ -1,74 +1,35 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { NextAuthOptions, User as NextAuthUser } from "next-auth";
-import bcrypt from "bcryptjs";
+import { NextAuthOptions } from "next-auth";
+import argon2 from "argon2";
 import UserModel from "@/models/user.model";
 import dbConnect from "@/helpers/dbconnect";
-
-// Define an interface for the credentials
-
-// Extend the User type from next-auth
-interface User extends NextAuthUser {
-  id: string; // Add the id property
-  _id: string; // Keep _id if you need it
-
-}
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
-      name: "credentials",
+      name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text" },
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        password: { label: "Password", type: "password" }
       },
-      async authorize(credentials: Record<"username" | "email" | "password", string> | undefined): Promise<User | null> {
+      async authorize(credentials) {
+        if (!credentials) return null;
         await dbConnect();
-        if (!credentials) {
-          throw new Error("No credentials provided");
+        const user = await UserModel.findOne({ email: credentials.email });
+        if (user && (await argon2.verify(user.password, credentials.password))) {
+          return {
+            id: user._id.toString(),
+            _id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            username: user.username,
+            // ...other fields
+          };
         }
-
-        const { username, email, password } = credentials;
-        const identifier = username || email; // Use either username or email
-
-        try {
-          const user = await UserModel.findOne({
-            $or: [
-              { email: identifier },
-              { username: identifier },
-            ],
-          });
-
-          if (!user) {
-            throw new Error("No user found with this email/username");
-          }
-
-          if (!user.password) {
-            throw new Error("Please sign in with your social account");
-          }
-
-          const isPasswordCorrect = await bcrypt.compare(
-            password,
-            user.password
-          );
-
-          if (isPasswordCorrect) {
-            return {
-              id: user._id.toString(), // Add the id property
-              _id: user._id.toString(),
-              username: user.username,
-              email: user.email,
-              // Include any other necessary fields
-            } as User; // Cast to User type
-          } else {
-            throw new Error("Incorrect password");
-          }
-        } catch (error) {
-          throw new Error(`Error while login with credentials ${error}`);
-        }
-      },
+        return null;
+      }
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -117,18 +78,7 @@ export const authOptions: NextAuthOptions = {
             (user as any).username = existingUser.username;
             (user as any).name = existingUser.name;
           }
-
-          // --- AUTO SESSION CREATION FOR GOOGLE USERS ---
-          const AuthClass = (await import("@/auth")).default;
-          const auth = new AuthClass({ dbconnect: dbConnect });
-          const sessionResult = await auth.createSession({ userId: (user as any)._id, expiresIn: 1000 * 60 * 60 * 24 * 7 });
-          if (sessionResult.error) {
-            console.error('Failed to create session for Google user:', sessionResult.error);
-            return false;
-          }
-          // --- END AUTO SESSION CREATION ---
         } catch (error) {
-          console.error("Google sign-in error:", error);
           return false;
         }
       }
@@ -147,7 +97,6 @@ export const authOptions: NextAuthOptions = {
         (session.user as any)._id = token._id;
         (session.user as any).username = token.username;
       }
-      console.log(session)
       return session;
     },
     async redirect({ url, baseUrl }) {

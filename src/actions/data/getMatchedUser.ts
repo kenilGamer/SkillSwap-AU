@@ -10,7 +10,7 @@ export default async function getMatchedUser(skills: string[]) {
         const user = await User.findOne({ skills: { $in: skills } })
         return { user: JSON.parse(JSON.stringify(user)) }
     } catch (error) {
-        console.log(error)
+        console.error(error)
         return { error: 'Something went wrong' }
     }
 }

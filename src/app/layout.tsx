@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import ProgressBar from '@/components/ProgressBar'
 import { Toaster } from '@/components/shadcn/ui/sonner'
+import { LoaderProvider, LoaderOverlay } from '@/components/GlobalLoader'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,7 +22,10 @@ export default function RootLayout({
             <body suppressHydrationWarning={true} cz-shortcut-listen="true" className={inter.className}>
                 <ProgressBar />
                 <Toaster richColors />
-                {children}
+                <LoaderProvider>
+                  <LoaderOverlay />
+                  {children}
+                </LoaderProvider>
             </body>
         </html>
     )

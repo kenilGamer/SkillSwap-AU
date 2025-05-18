@@ -6,12 +6,12 @@ const chatStore = proxy({
   openedChat: null as any | null,
 
   setChats(chats: any[]) {
-    console.log("Setting chats in store:", chats);
+
     chatStore.chats = chats;
   },
 
   setOpenedChat(chat: any) {
-    console.log("Opening chat with id:", chat);
+
     chatStore.openedChat = chat;
   },
 });

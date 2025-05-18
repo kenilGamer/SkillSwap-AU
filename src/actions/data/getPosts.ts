@@ -8,7 +8,7 @@ export default async function getPosts() {
         const posts = await Post.find().limit(10).populate('owner', 'username image name _id')
         return { posts: JSON.parse(JSON.stringify(posts)).reverse() }
     } catch (error) {
-        console.log(error)
+        console.error(error)
         return { error: 'Something went wrong' }
     }
 }

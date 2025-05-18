@@ -42,7 +42,7 @@ function EditProfile({ user }) {
         return __awaiter(this, void 0, void 0, function* () {
             const validate = user_validation_1.userValidation.safeParse({ name, username, country, website, bio, skills: selectedSkills });
             if (!validate.success) {
-                console.log(validate.error.formErrors);
+                console.error(validate.error.formErrors);
                 return setError(validate.error.formErrors.fieldErrors);
             }
             setError({});

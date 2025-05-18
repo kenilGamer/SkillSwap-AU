@@ -12,7 +12,6 @@ import ChatBubble from "./ChatBubble";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/shadcn/ui/dropdown-menu";
 import io from "socket.io-client";
 import axios from "axios";
-
 // Initialize Socket.IO client
 const socket = io("http://localhost:4000");
 
@@ -22,7 +21,6 @@ export default function ChatPanel() {
   const chatBox = useRef() as MutableRefObject<HTMLDivElement>;
   const [messages, setMessages] = useState<{ sender: string; content: string }[]>([]);
   const [input, setInput] = useState("");
-  const [messagesByChat, setMessagesByChat] = useState<{ [chatId: string]: { sender: string; content: string }[] }>({});
   const [chatPartner, setChatPartner] = useState<any>(null);
 
   // Listen for socket messages
@@ -31,10 +29,6 @@ export default function ChatPanel() {
       if (msg.chatId === openedChat?._id) {
         setMessages((prev) => {
           const updated = [...prev, msg];
-          setMessagesByChat((cache) => ({
-            ...cache,
-            [openedChat._id]: updated
-          }));
           return updated;
         });
       }
@@ -57,26 +51,19 @@ export default function ChatPanel() {
   useEffect(() => {
     if (openedChat?._id) {
       socket.emit("joinChat", openedChat._id);
-      if (messagesByChat[openedChat._id]) {
-        setMessages(messagesByChat[openedChat._id]);
+      const local = localStorage.getItem(`chat-messages-${openedChat._id}`);
+      if (local) {
+        setMessages(JSON.parse(local));
       } else {
         axios.get(`/api/chat/${openedChat._id}`)
           .then(res => {
             if (Array.isArray(res.data.messages)) {
               setMessages(res.data.messages);
-              setMessagesByChat(prev => ({
-                ...prev,
-                [openedChat._id]: res.data.messages
-              }));
             }
           })
           .catch((err) => {
             if (err.response && err.response.status === 404) {
               setMessages([]);
-              setMessagesByChat(prev => ({
-                ...prev,
-                [openedChat._id]: []
-              }));
             }
           });
       }

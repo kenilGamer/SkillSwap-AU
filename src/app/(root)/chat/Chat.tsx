@@ -8,8 +8,9 @@ import ChatCard from './ChatCard'
 import ChatPanel from './ChatPanel'
 import { useSnapshot } from 'valtio'
 import chatStore from '@/store/chat.store'
+import NotificationBell from './NotificationBell'
 
-export default function Chat() {
+export default function Chat({ messages }: { messages: any }) {
   const [showUnsavedChats, setShowUnsavedChats] = useState(false)
   const { chats } = useSnapshot(chatStore) as typeof chatStore
 
@@ -28,10 +29,7 @@ export default function Chat() {
             onClick={() => setShowUnsavedChats(!showUnsavedChats)}
             className="relative cursor-pointer"
           >
-            <div className="absolute bottom-[60%] right-[40%] z-10 aspect-square w-2 rounded-full bg-red-500"></div>
-            <div className={`rounded-full p-[6px] ${showUnsavedChats && 'bg-gray-200'}`}>
-              <FaRegBell size="20px" className="rotate-45" />
-            </div>
+            <NotificationBell hasNotification={!showUnsavedChats} />
           </div>
         </div>
         <div className="grow overflow-hidden">
@@ -48,7 +46,7 @@ export default function Chat() {
           </div>
         </div>
       </div>
-      <ChatPanel />
+      <ChatPanel  />
     </div>
   )
 }

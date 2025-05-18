@@ -9,7 +9,7 @@ interface SearchablePostsProps {
   error: boolean | string | null
 }
 
-export default function SearchablePosts({ posts, error }: SearchablePostsProps) {
+export default function SearchablePosts({ posts = [], error }: SearchablePostsProps) {
   const [query, setQuery] = useState('')
 
   // Filter posts based on query. Adjust filtering logic as needed.

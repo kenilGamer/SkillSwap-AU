@@ -15,14 +15,18 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  socket.on("sendMessage", (message) => {
-    io.emit("receiveMessage", message); // Broadcast to all clients
+  socket.on("joinChat", (chatId) => {
+    socket.join(chatId);
+  });
 
+  socket.on("sendMessage", (message) => {
+    io.to(message.chatId).emit("receiveMessage", message); // Only to the relevant chat room
   });
 
   socket.on("typing", (data) => {
-    io.emit("typing", data); // Broadcast to all clients
-  })
+    io.to(data.chatId).emit("typing", data); // Only to the relevant chat room
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });

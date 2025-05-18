@@ -1,33 +1,18 @@
 import mongoose, { Schema, Model, Types } from 'mongoose';
 
-interface IChat {
-  receiver: Types.ObjectId;
-  sender: Types.ObjectId;
-  message: string;
-  isSeen: boolean;
+export interface IChat {
+  participants: Types.ObjectId[]; // Array of user IDs
+  // Optionally, you can add other fields like lastMessage, etc.
 }
 
 const chatSchema = new Schema<IChat>(
   {
-    receiver: {
+    participants: [{
       type: Schema.Types.ObjectId,
-      ref: 'User', // ✅ Ensure this is 'User', not 'users'
+      ref: 'User',
       required: true,
-    },
-    sender: {
-      type: Schema.Types.ObjectId,
-      ref: 'User', // ✅ Correct reference
-      required: true,
-    },
-    message: {
-      type: String,
-      required: true,
-    },
-    isSeen: {
-      type: Boolean,
-      default: false,
-    },
-    
+    }],
+    // Optionally, add lastMessage, createdAt, etc.
   },
   { timestamps: true }
 );

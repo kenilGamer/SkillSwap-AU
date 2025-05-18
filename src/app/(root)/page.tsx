@@ -3,17 +3,27 @@ import RequirementCard, { IPropRequirementCard } from '@/components/root/Require
 import NewPostForm from '../../components/root/NewPostForm'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/shadcn/ui/dialog'
 import getPosts from '@/actions/data/getPosts'
-import SearchablePosts from '@/components/SearchablePosts'  
+import dynamic from 'next/dynamic'
+import { redirect } from 'next/navigation'
+import auth from '@/auth/auth'
+
+const SearchablePosts = dynamic(() => import('@/components/SearchablePosts'), { ssr: false })
 
 export default async function Page() {
+  const res = await auth.getCurrentUser()
+  if (res.error) {
+    redirect('/login')
+  }
   const { posts, error } = await getPosts() // posts should be serializable
-
+  if (error) {
+    redirect('/login')
+  }
   return (
     <div className="flex w-full gap-5 overflow-hidden p-5 xl:p-7">
       <div className="flex w-full flex-col gap-5 rounded-2xl xl:p-3 xl:shadow-[0px_0px_2px_1px_#00000030]">
         {/* Search Input & Filtered Posts */}
           <h1 className="text-xl font-medium text-black/70">Active Requirements</h1>
-        <SearchablePosts posts={posts} error={error} />
+        <SearchablePosts posts={posts} error={error ?? null} />
 
         <div className="flex">
           <Dialog>

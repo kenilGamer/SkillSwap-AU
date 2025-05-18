@@ -10,11 +10,9 @@ const chatStore = proxy({
     chatStore.chats = chats;
   },
 
-  setOpenedChat(id: string) {
-    console.log("Opening chat with id:", id);
-    const chat = chatStore.chats.find((chat) => chat._id.toString() === id);
-    console.log("Found chat:", chat);
-    chatStore.openedChat = chat || null;
+  setOpenedChat(chat: any) {
+    console.log("Opening chat with id:", chat);
+    chatStore.openedChat = chat;
   },
 });
 

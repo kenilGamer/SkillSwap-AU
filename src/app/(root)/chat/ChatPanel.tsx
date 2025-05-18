@@ -11,6 +11,7 @@ import { Button } from "@/components/Button";
 import ChatBubble from "./ChatBubble";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/shadcn/ui/dropdown-menu";
 import io from "socket.io-client";
+import axios from "axios";
 
 // Initialize Socket.IO client
 const socket = io("http://localhost:4000");
@@ -21,18 +22,27 @@ export default function ChatPanel() {
   const chatBox = useRef() as MutableRefObject<HTMLDivElement>;
   const [messages, setMessages] = useState<{ sender: string; content: string }[]>([]);
   const [input, setInput] = useState("");
+  const [messagesByChat, setMessagesByChat] = useState<{ [chatId: string]: { sender: string; content: string }[] }>({});
+  const [chatPartner, setChatPartner] = useState<any>(null);
 
   // Listen for socket messages
   useEffect(() => {
-    socket.on("message", (msg) => {
-      console.log("Received message:", msg);
-      setMessages((prev) => [...prev, msg]);
+    socket.on("receiveMessage", (msg) => {
+      if (msg.chatId === openedChat?._id) {
+        setMessages((prev) => {
+          const updated = [...prev, msg];
+          setMessagesByChat((cache) => ({
+            ...cache,
+            [openedChat._id]: updated
+          }));
+          return updated;
+        });
+      }
     });
-
     return () => {
-      socket.off("message");
+      socket.off("receiveMessage");
     };
-  }, []);
+  }, [openedChat?._id]);
 
   // Auto-scroll chat box on new messages
   useEffect(() => {
@@ -43,26 +53,69 @@ export default function ChatPanel() {
     }
   }, [messages]);
 
+  // Join the chat room and fetch previous messages when openedChat changes
+  useEffect(() => {
+    if (openedChat?._id) {
+      socket.emit("joinChat", openedChat._id);
+      if (messagesByChat[openedChat._id]) {
+        setMessages(messagesByChat[openedChat._id]);
+      } else {
+        axios.get(`/api/chat/${openedChat._id}`)
+          .then(res => {
+            if (Array.isArray(res.data.messages)) {
+              setMessages(res.data.messages);
+              setMessagesByChat(prev => ({
+                ...prev,
+                [openedChat._id]: res.data.messages
+              }));
+            }
+          })
+          .catch((err) => {
+            if (err.response && err.response.status === 404) {
+              setMessages([]);
+              setMessagesByChat(prev => ({
+                ...prev,
+                [openedChat._id]: []
+              }));
+            }
+          });
+      }
+    }
+  }, [openedChat?._id]);
+
+  useEffect(() => {
+    if (openedChat?.participants && user?._id) {
+      let otherUserId = openedChat.participants.find((id: string) => id !== user._id);
+      // If not found (self-chat), use current user's ID
+      if (!otherUserId && openedChat.participants.includes(user._id)) {
+        otherUserId = user._id;
+      }
+      if (otherUserId) {
+        axios.get(`/api/users/${otherUserId}`)
+          .then(res => {
+            setChatPartner(res.data.user);
+          })
+          .catch(() => {
+            setChatPartner(null); // Gracefully handle 404 or other errors
+          });
+      }
+    }
+  }, [openedChat, user?._id]);
+
   if (!openedChat)
     return (
       <div className="flex h-full w-full items-center justify-center text-black/60">
         No chat is selected
       </div>
     );
-    const chatPartner =
-    openedChat && openedChat.sender && openedChat.receiver
-      ? openedChat.sender.username === user.username
-        ? openedChat.receiver.username
-        : openedChat.sender.username
-      : "Unknown User";
+    const chatPartnerName = chatPartner?.username || chatPartner?.name || "Unknown User";
   
 
   // Emit message to server
   const sendMessage = () => {
     if (input.trim()) {
-      const newMessage = { sender: user.username, content: input };
-      socket.emit("message", newMessage);
-      setMessages((prev) => [...prev, newMessage]);
+      const newMessage = { chatId: openedChat._id, sender: user.username, content: input };
+      socket.emit("sendMessage", newMessage);
       setInput("");
     }
   };
@@ -80,7 +133,7 @@ export default function ChatPanel() {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <h1 className="font-medium text-gray-800">{chatPartner}</h1>
+            <h1 className="font-medium text-gray-800">{chatPartnerName}</h1>
             <span className="block text-sm">Online</span>
           </div>
         </div>

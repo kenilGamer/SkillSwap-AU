@@ -8,6 +8,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/ui/dropdown-menu';
 import chatStore from '@/store/chat.store';
+import userStore from '@/store/user.store';
+import { useSnapshot } from 'valtio';
 
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
@@ -20,6 +22,7 @@ export default function ChatCard({ data }: { data: any }) {
   const searchParams = useSearchParams();
   const [chats, setChats] = useState();
   const sender = searchParams?.get('sender');
+  const { user } = useSnapshot(userStore);
 
 
 
@@ -45,12 +48,46 @@ useEffect(() => {
   // Determine the chat user's name from the passed data prop.
   const chatUser = data?.username || 'Unknown User';
 
+  // Do not render the card if the data._id is the current user's id
+  if (data._id === user._id) {
+    return null;
+  }
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering card click
+    try {
+      await axios.delete(`/api/chat/${data._id}`);
+      // Remove chat from chatStore.chats
+      chatStore.setChats(chatStore.chats.filter((c: any) => c._id !== data._id));
+      // Optionally, clear openedChat if it was deleted
+      if (chatStore.openedChat?._id === data._id) {
+        chatStore.setOpenedChat(null);
+      }
+    } catch (err) {
+      console.error('Failed to delete chat:', err);
+    }
+  };
+
+  const handleOpenChat = async () => {
+    // Find or create a chat between the current user and the selected user
+    try {
+      const response = await axios.post('/api/chat/chats', {
+        senderId: user._id,
+        recipientId: data._id,
+      });
+      if (response.data && response.data.data && response.data.data._id) {
+        chatStore.setOpenedChat(response.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to open chat:', err);
+    }
+  };
+
+  console.log("ChatCard data:", data);
+
   return (
     <div
-      onClick={() => {
-        console.log('Clicked Chat ID:', chatUser._id);
-        chatStore.setOpenedChat(chats?._id);
-      }}
+      onClick={handleOpenChat}
       className="mx-3 flex h-16 cursor-pointer items-center gap-2 rounded-lg border bg-accent p-2 shadow-sm"
     >
       {/* User Avatar */}
@@ -67,7 +104,7 @@ useEffect(() => {
         <h1 className="text-sm font-medium text-black/70">{chatUser}</h1>
         {/* Replace the following with the appropriate logic for showing the last message */}
         <span className="block truncate text-xs font-medium text-black/50">
-          No recent messages
+          {data.lastMessage?.content || 'No recent messages'}
         </span>
       </div>
 
@@ -79,7 +116,7 @@ useEffect(() => {
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleDelete}>
             Delete
             <DropdownMenuShortcut>
               <MdDelete className="size-4" />

@@ -17,7 +17,7 @@ export default function Navbar() {
         { path: '/matchmaking', name: 'Matchmaking', icon: <LiaHandshake /> },
         { path: '/chat', name: 'Chat', icon: <IoChatbubbleEllipsesOutline /> },
         { path: '/profile', name: 'Profile', icon: <FaRegUser /> },
-        
+        { path: '/forum', name: 'Forum', icon: <FaRegUser /> },
     ]
 
     return (

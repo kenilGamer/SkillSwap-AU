@@ -19,4 +19,5 @@ export const userValidation = z.object({
     website: z.string(),
     skills: z.array(z.string()),
     bio: z.string().trim(),
+    image: z.string().optional(),
 })

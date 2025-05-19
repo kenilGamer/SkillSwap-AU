@@ -11,10 +11,12 @@ export default async function layout({ children }: { children: React.ReactNode }
         redirect('/login')
     }
     return (
-        <div className="flex h-screen w-screen">
+        <div className="flex h-screen w-full">
             <Navbar />
-            {res.user && <SetUser user={formatUser(res.user as any)} />}
-            {children}
+            <div className="flex-1 overflow-auto">
+                {res.user && <SetUser user={formatUser(res.user as any)} />}
+                {children}
+            </div>
         </div>
     )
 }

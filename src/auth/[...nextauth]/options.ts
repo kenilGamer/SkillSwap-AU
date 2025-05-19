@@ -110,4 +110,17 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  // The cookies section below ensures proper handling of session cookies for OAuth flows, especially in local development.
+  // Adjusting sameSite and secure options helps prevent 'State cookie was missing' errors.
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
 };

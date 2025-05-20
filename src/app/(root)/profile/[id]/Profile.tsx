@@ -12,8 +12,7 @@ export default function Profile({ user, currentUserId }: { user: IUser; currentU
     useEffect(() => {
         const fetchFollowers = async () => {
             try {
-                const response = await axios.get(`/api/follow/${currentUserId}`);
-
+                await axios.get(`/api/follow/${currentUserId}`);
             } catch (error) {
                 console.error("Error fetching followers:", error);
             }
@@ -22,23 +21,22 @@ export default function Profile({ user, currentUserId }: { user: IUser; currentU
         if (user?._id) fetchFollowers();
     }, [user?._id]);
     
-const handleFollow = async () => {
-    try {
-        const response = await axios.post(`/api/follow/${user._id}`, { currentUserId });
-
-
-        // Toggle following state
-        setIsFollowing((prev) => !prev);
-    } catch (error) {
-        console.error('Error following user:', error);
-    }
-};
+    const handleFollow = async () => {
+        try {
+            await axios.post(`/api/follow/${user._id}`, { currentUserId });
+            setIsFollowing((prev) => !prev);
+        } catch (error) {
+            console.error('Error following user:', error);
+        }
+    };
 
     return (
-        <div className="flex w-full flex-col gap-5 overflow-hidden bg-accent p-5">
-            <div className="flex flex-col gap-5 rounded-xl border bg-white p-5 shadow-sm">
-                <div className="flex gap-4">
-                    <div className="aspect-square h-full shrink-0 overflow-hidden rounded-xl bg-red-200">
+        <div className="flex w-full flex-col items-center bg-gradient-to-b from-indigo-50 to-white min-h-screen py-8 px-2">
+            {/* Banner/Cover */}
+            <div className="w-full max-w-2xl h-32 rounded-2xl bg-gradient-to-r from-indigo-400 to-indigo-600 mb-[-64px] shadow-lg relative flex items-end justify-center">
+                {/* Avatar */}
+                <div className="absolute left-1/2 -bottom-10 -translate-x-1/2">
+                    <div className="h-32 w-32 rounded-full border-4 border-white shadow-xl bg-gray-200 overflow-hidden flex items-center justify-center">
                         {user.image ? (
                             <img
                                 className="h-full w-full object-cover"
@@ -46,65 +44,53 @@ const handleFollow = async () => {
                                 alt="Profile Image"
                             />
                         ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-blue-300 text-3xl">
+                            <div className="flex h-full w-full items-center justify-center bg-blue-300 text-4xl font-bold text-white">
                                 {user?.name?.charAt(0)}
                             </div>
                         )}
                     </div>
-                    <div className="flex w-full flex-col gap-4">
-                        <div>
-                            <h2 className="text-xl font-medium text-black/90">{user.name}</h2>
+                </div>
+            </div>
+            {/* Card */}
+            <div className="w-full max-w-2xl mt-20 rounded-2xl bg-white shadow-xl p-8 flex flex-col gap-8">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-8 gap-4 items-center">
+                    <div className="flex-1 text-center md:text-left">
+                        <h2 className="text-3xl font-extrabold text-indigo-700 mb-1">{user.name}</h2>
+                        <div className="flex flex-wrap gap-4 text-sm text-gray-500 justify-center md:justify-start mb-2">
+                            <span>@{user.username || 'unset'}</span>
+                            <span>{user.country || 'unset'}</span>
+                            <span>{user.email || 'unset'}</span>
+                            {user.website ? (
+                                <a target="_blank" className="text-blue-600 underline" href={user.website}>{user.website}</a>
+                            ) : (
+                                <span>unset</span>
+                            )}
                         </div>
-                        <hr />
-                        <div className="flex gap-20">
-                            <div className="flex flex-col gap-1 text-sm text-black/80">
-                                <span>Username</span>
-                                <span>Country</span>
-                                <span>Email</span>
-                                <span>Website</span>
-                            </div>
-                            <div className="flex flex-col gap-1 text-sm text-black/90">
-                                <span>{user.username || 'unset'}</span>
-                                <span>{user.country || 'unset'}</span>
-                                <span>{user.email || 'unset'}</span>
-                                {user.website ? (
-                                    <a target="_blank" className="text-blue-600" href={user.website}>
-                                        {user.website}
-                                    </a>
-                                ) : (
-                                    <span>unset</span>
-                                )}
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                onClick={handleFollow}
-                                className={`py-2 px-4 rounded text-white font-bold ${
-                                    isFollowing ? 'bg-red-500 hover:bg-red-700' : 'bg-blue-500 hover:bg-blue-700'
-                                }`}
-                            >
-                                {isFollowing ? 'Unfollow' : 'Follow'}
-                            </button>
-                        </div>
+                        <button
+                            onClick={handleFollow}
+                            className={`mt-2 py-2 px-6 rounded-full font-semibold shadow transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 ${
+                                isFollowing ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-indigo-500 hover:bg-indigo-600 text-white'
+                            }`}
+                        >
+                            {isFollowing ? 'Unfollow' : 'Follow'}
+                        </button>
                     </div>
                 </div>
-                <hr />
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-lg font-medium text-black/80">Skills</h2>
+                <hr className="my-2" />
+                <div>
+                    <h3 className="text-lg font-semibold text-indigo-700 mb-2">Skills</h3>
                     <div className="flex flex-wrap gap-2">
-                        {!user.skills?.length && <span className="text-sm text-black/70">{user.name} has no skills</span>}
+                        {!user.skills?.length && <span className="text-sm text-gray-400">{user.name} has no skills</span>}
                         {user?.skills?.map((name, i) => (
-                            <Badge className="rounded-full bg-indigo-500 hover:bg-indigo-500" key={i}>
+                            <Badge className="rounded-full bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 text-sm font-medium shadow" key={i}>
                                 {name}
                             </Badge>
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-lg font-medium text-black/80">Bio</h2>
-                    <p className="text-sm text-black/70">
-                        {user.bio || <span className="text-sm text-black/70">{"He hasn't added any bio"}</span>}
-                    </p>
+                <div>
+                    <h3 className="text-lg font-semibold text-indigo-700 mb-2">Bio</h3>
+                    <p className="text-base text-gray-700 min-h-[40px]">{user.bio || <span className="text-gray-400">No bio provided.</span>}</p>
                 </div>
             </div>
         </div>

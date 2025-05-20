@@ -6,6 +6,7 @@ import getPosts from '@/actions/data/getPosts'
 import auth from '@/auth/auth'
 import SearchablePosts from '@/components/SearchablePosts'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 
 export default async function Page() {
   let posts = [];
@@ -19,11 +20,27 @@ export default async function Page() {
     posts = result.posts
     error = result.error
     if (error) {
+      // Check for Mongoose timeout error
+      if (
+        typeof error === 'string' &&
+        error.includes('MongooseError: Operation `posts.find()` buffering timed out')
+      ) {
+        // Optionally clear cookies/session here if needed
+        // For NextAuth, you can redirect to /api/auth/signout?callbackUrl=/login
+        redirect('/api/auth/signout?callbackUrl=/login')
+      }
       // Optionally log the error for debugging
       console.log(`Redirecting to login from page: ${error}`)
       // redirect('/login')
     }
-  } catch (err) {
+  } catch (err: any) {
+    // Check for Mongoose timeout error in catch block
+    if (
+      typeof err?.message === 'string' &&
+      err.message.includes('MongooseError: Operation `posts.find()` buffering timed out')
+    ) {
+      redirect('/api/auth/signout?callbackUrl=/login')
+    }
     // Optionally log the error for debugging
     console.log(`Redirecting to login from page: ${err}`)
     // redirect('/login')

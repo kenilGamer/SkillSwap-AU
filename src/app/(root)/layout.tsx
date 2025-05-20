@@ -3,7 +3,7 @@ import Navbar from '@/components/root/Navbar'
 import { redirect } from 'next/navigation'
 import SetUser from '@/components/root/setUser'
 import formatUser from '@/helpers/formatUser'
-import { IUser } from '@/models/user.model'
+import Link from 'next/link'
 
 export default async function layout({ children }: { children: React.ReactNode }) {
     const res = await auth.getCurrentUser()
@@ -15,6 +15,7 @@ export default async function layout({ children }: { children: React.ReactNode }
             <Navbar />
             <div className="flex-1 overflow-auto">
                 {res.user && <SetUser user={formatUser(res.user as any)} />}
+                
                 {children}
             </div>
         </div>

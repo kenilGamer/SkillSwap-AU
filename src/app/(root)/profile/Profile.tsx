@@ -10,7 +10,6 @@ import RequirementCard, { IPropRequirementCard } from '@/components/root/Require
 
 export default function Profile({ posts }: { posts: IPost[] }) {
     const { user } = useSnapshot(userStore) as typeof userStore
-    console.log(user)
     return (
         <div className="flex w-full flex-col gap-5 overflow-auto bg-accent p-5">
             <div className="flex items-center justify-between">

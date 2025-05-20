@@ -42,6 +42,8 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
+userSchema.index({ skills: 1 });
+
 // ✅ Ensure model name is 'User' (not 'users')
 const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 

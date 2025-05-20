@@ -9,13 +9,6 @@ let questions = [
     userName: 'Ali Khan',
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
   },
-  {
-    id: 2,
-    title: 'Next.js me dynamic routing kaise kaam karta hai?',
-    description: 'Dynamic routes banane ka sahi tareeqa kya hai Next.js me?',
-    userName: 'Sara Ahmed',
-    createdAt: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
-  },
 ];
 
 export async function GET() {

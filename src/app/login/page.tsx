@@ -11,7 +11,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { IoAlertCircleOutline } from 'react-icons/io5'
 import { useState } from 'react'
-import Login from '@/actions/user/authentication/login'
 import { FaUser, FaGithub } from 'react-icons/fa'
 import { FcGoogle } from "react-icons/fc";
 import { FaDiscord } from "react-icons/fa";
@@ -31,8 +30,12 @@ export default function Page() {
     async function onSubmit(values: any) {
         setError('')
         setLoading(true)
-        const res = await Login(values)
-        if (res.error) {
+        const res = await signIn("credentials", {
+            redirect: false,
+            email: values.email,
+            password: values.password,
+        });
+        if (res?.error) {
             setError(res.error)
             setLoading(false)
             return

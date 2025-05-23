@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ success: false, message: 'Server error' });
     }
   } else {
-    console.log();
+    console.log('Method Not Allowed');
     
     res.status(405).json({ message: 'Method Not Allowed' });
   }

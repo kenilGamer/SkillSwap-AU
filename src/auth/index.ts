@@ -14,12 +14,7 @@ class Auth {
         this.dbconnect = options.dbconnect
     }
 
-    // Helper to get current user using NextAuth session
-    async getCurrentUser() {
-        const session = await getServerSession(authOptions);
-        if (!session || !session.user) return { error: 'Not authenticated' };
-        return { user: session.user };
-    }
+
 
     async createSession({ userId, expiresIn }: { userId: string; expiresIn: number }) {
         if (!isValidObjectId(userId)) return { error: 'Invalid user ID' }
@@ -34,7 +29,7 @@ class Auth {
     }
 
     async getCurrentSession() {
-        return await this.getCurrentUser()
+        return await getServerSession(authOptions)
     }
 
     async deleteCurrentUsersSession() {
@@ -43,9 +38,9 @@ class Auth {
 
     async deleteCurrentUsersAllSessions() {
         try {
-            const res: any = await this.getCurrentUser()
+            const res: any = await this.getCurrentSession()
             if (res.error) return { error: res.error }
-            await Session.deleteMany({ user: res.user._id })
+            await Session.deleteMany({ user: (res.user as any)._id })
             return { success: 'Deleted current users all session' }
         } catch (error) {
             return { error: "Couldn't delete current users session" }
@@ -84,6 +79,12 @@ class Auth {
         } catch (error) {
             return { error: "Couldn't delete expired sessions" }
         }
+    }
+
+    async getCurrentUser() {
+        const session = await this.getCurrentSession();
+        if (!session || !session.user) return { error: 'Not authenticated' };
+        return { user: session.user };
     }
 }
 

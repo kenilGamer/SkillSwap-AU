@@ -32,7 +32,7 @@ export default function SearchablePosts({ posts = [], error }: SearchablePostsPr
         <input
           onChange={(e) => setQuery(e.target.value)}
           value={query}
-          className="max-sm:px-5 py-4 md:px-16 mt-2 outline-none text-zinc-200 rounded-full text-xl flex items-center mx-auto justify-center shadow-md shadow-[#000033]"
+          className="max-sm:px-5 py-4 md:px-16 mt-2 outline-none text-zinc-700 rounded-full text-xl flex items-center mx-auto justify-center shadow-md shadow-[#000033]"
           type="search"
           name="search"
           placeholder="Search posts..."

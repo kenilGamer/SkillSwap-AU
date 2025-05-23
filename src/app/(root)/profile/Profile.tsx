@@ -17,13 +17,13 @@ export default function Profile({ posts }: { posts: IPost[] }) {
                 <EditProfile user={user} />
             </div>
             <div className="flex flex-col gap-5 rounded-xl border bg-white p-5 shadow-sm">
-                <div className="flex gap-4">
-                    <div className="aspect-square h-full shrink-0 overflow-hidden rounded-xl bg-red-200">
-                        {user.image ? (
+                <div className="flex items-center gap-4">
+                    <div className=" h-fit  shrink-0 flex items-center justify-center overflow-hidden rounded-xl bg-red-200">
+                        {user?.image ? (
                             <img
-                                className="h-full w-full object-cover"
-                                src={user.image}
-                                alt=""
+                                className=" h-32 w-32 object-cover"
+                                src={user?.image || '/avatar/default.png'}
+                                alt="Profile photo"
                             />
                         ) : (
                             <div className="flex h-full w-full items-center justify-center bg-blue-300 text-3xl">{user?.name?.split('')[0]}</div>

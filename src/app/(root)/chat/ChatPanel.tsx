@@ -18,7 +18,7 @@ const socket = io("http://localhost:4000");
 export default function ChatPanel() {
   const { user } = useSnapshot(userStore);
   const { openedChat } = useSnapshot(chatStore);
-  const chatBox = useRef() as MutableRefObject<HTMLDivElement>;
+  const chatBox = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<{ sender: string; content: string }[]>([]);
   const [input, setInput] = useState("");
   const [chatPartner, setChatPartner] = useState<any>(null);
@@ -42,7 +42,9 @@ export default function ChatPanel() {
   useEffect(() => {
     if (chatBox.current) {
       setTimeout(() => {
-        chatBox.current.scrollTop = chatBox.current.scrollHeight;
+        if (chatBox.current) {
+          chatBox.current.scrollTop = chatBox.current.scrollHeight;
+        }
       }, 100);
     }
   }, [messages]);
@@ -88,6 +90,12 @@ export default function ChatPanel() {
       }
     }
   }, [openedChat, user?._id]);
+
+  useEffect(() => {
+    if (openedChat?._id) {
+      localStorage.setItem(`chat-messages-${openedChat._id}`, JSON.stringify(messages));
+    }
+  }, [messages, openedChat?._id]);
 
   if (!openedChat)
     return (

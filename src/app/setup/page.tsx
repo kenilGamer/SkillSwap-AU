@@ -3,7 +3,7 @@
 import { Button } from '@/components/Button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/shadcn/ui/form';
 import { Input } from '@/components/shadcn/ui/input';
-import { userSignupValidation } from '@/validations/user.validation';
+import { userValidation } from '@/validations/user.validation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,13 +13,15 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import { MdModeEdit } from 'react-icons/md';
 
 export default function Page() {
-    const form = useForm<z.infer<typeof userSignupValidation>>({
-        resolver: zodResolver(userSignupValidation),
+    const form = useForm<z.infer<typeof userValidation>>({
+        resolver: zodResolver(userValidation),
         defaultValues: {
             name: '',
             username: '',
-            email: '',
-            password: '',
+            country: '',
+            website: '',
+            skills: [],
+            bio: '',
         },
     });
 
@@ -41,8 +43,10 @@ export default function Page() {
 
         formData.append('name', values.name);
         formData.append('username', values.username);
-        formData.append('email', values.email);
-        formData.append('password', values.password);
+        formData.append('country', values.country);
+        formData.append('website', values.website);
+        formData.append('skills', JSON.stringify(values.skills));
+        formData.append('bio', values.bio);
         if (avatar) {
             formData.append('avatar', avatar);
         }
@@ -114,56 +118,31 @@ export default function Page() {
                                     </FormItem>
                                 )} />
 
-                                <FormField control={form.control} name="email" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl><Input placeholder="text@example.com" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-                                <FormField control={form.control} name="Country" render={({ field }) => (
+                                <FormField control={form.control} name="country" render={({ field }) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Country</FormLabel>
                                         <FormControl><Input placeholder="" {...field} /></FormControl>
                                     </FormItem>
                                 )} />
-                                <FormField control={form.control} name="password" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl><Input type="password" placeholder="*********" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
                             </div>
                             <div className='flex flex-col gap-5 w-1/2'>
-                                <FormField control={form.control} name="Website" render={({ field }) => (
+                                <FormField control={form.control} name="website" render={({ field }) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Website</FormLabel>
                                         <FormControl><Input placeholder="www.example.com" {...field} /></FormControl>
                                     </FormItem>
                                 )} />
 
-                                <FormField control={form.control} name="Skill" render={({ field }) => (
+                                <FormField control={form.control} name="skills" render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Skill</FormLabel>
-                                        <FormControl><Input placeholder="Enter your codeing skills" {...field} /></FormControl>
+                                        <FormLabel>Skills</FormLabel>
+                                        <FormControl><Input placeholder="Enter your coding skills (comma separated)" value={field.value?.join(', ') || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="bio" render={({ field }) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Bio</FormLabel>
-                                        <FormControl><Input type="text" placeholder="*********" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-                                <FormField control={form.control} name="About" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>About</FormLabel>
-                                        <FormControl><Input placeholder="ENTER YOUR ABOUT" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-
-                                <FormField control={form.control} name="password" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Confirm Password</FormLabel>
-                                        <FormControl><Input type="password" placeholder="*********" {...field} /></FormControl>
+                                        <FormControl><Input type="text" placeholder="Tell us about yourself" {...field} /></FormControl>
                                     </FormItem>
                                 )} />
                             </div>

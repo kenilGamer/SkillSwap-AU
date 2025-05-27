@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import { isValidObjectId } from 'mongoose';
 import formatUser from '@/helpers/formatUser';
 
-export default async function Page({ params: { id } }: any) {
+export default async function Page({ params }: { params: { id: string } }) {
+    const { id } = await params;
     try {
         if (!isValidObjectId(id)) redirect('/');
 

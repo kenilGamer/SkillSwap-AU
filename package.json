@@ -29,6 +29,8 @@
         "cmdk": "^1.0.0",
         "express": "^4.21.2",
         "formidable": "^3.5.2",
+        "framer-motion": "^12.14.0",
+        "lucide-react": "^0.511.0",
         "luxon": "^3.4.4",
         "minisearch": "^6.3.0",
         "mongoose": "^8.3.5",

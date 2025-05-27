@@ -9,7 +9,7 @@ export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
-      name: "Credentials",
+      name: "Credentials", 
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
@@ -24,8 +24,7 @@ export const authOptions: NextAuthOptions = {
             _id: user._id.toString(),
             email: user.email,
             name: user.name,
-            username: user.username,
-            // ...other fields
+            username: user.username
           };
         }
         return null;
@@ -34,7 +33,14 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
+    })
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -42,43 +48,31 @@ export const authOptions: NextAuthOptions = {
         await dbConnect();
         try {
           const existingUser = await UserModel.findOne({
-            email: profile?.email,
+            email: profile?.email
           });
 
-          if (!existingUser) {
-            // Generate username from Google profile
-            let username = profile?.name?.replace(/\s+/g, "").toLowerCase();
-
-            // If no name in profile, use email local part
-            if (!username) {
-              username = profile?.email?.split("@")[0];
-            }
-
-            // Check for existing username
-            let usernameExists = await UserModel.findOne({ username });
-            while (usernameExists) {
-              username = `${username}${Math.floor(Math.random() * 1000)}`;
-              usernameExists = await UserModel.findOne({ username });
-            }
-
-            const newUser = new UserModel({
-              email: profile?.email,
-              username,
-              name: profile?.name || username,
-              // Add any other required fields from your UserModel
-            });
-
-            await newUser.save();
-            (user as any)._id = newUser._id.toString();
-            (user as any).username = newUser.username;
-            (user as any).name = newUser.name;
+          if (existingUser) {
+            // Existing user - update their info
+            user._id = existingUser._id.toString();
+            user.username = existingUser.username;
+            user.name = existingUser.name;
           } else {
-            // Update user object with existing data
-            (user as any)._id = existingUser._id.toString();
-            (user as any).username = existingUser.username;
-            (user as any).name = existingUser.name;
+            // New user - create account
+            const newUser = await UserModel.create({
+              email: profile?.email,
+              name: profile?.name,
+              username: profile?.email?.split('@')[0], // Generate username from email
+              password: '', // Empty password for OAuth users
+              authProvider: 'google'
+            });
+            
+            user._id = newUser._id.toString();
+            user.username = newUser.username;
+            user.name = newUser.name;
           }
+          return true;
         } catch (error) {
+          console.error("Error in Google sign in:", error);
           return false;
         }
       }
@@ -86,41 +80,38 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token._id = (user as any)._id?.toString();
-        token.username = (user as any).username;
-
+        token._id = user._id;
+        token.username = user.username;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as any)._id = token._id;
-        (session.user as any).username = token.username;
+        session.user._id = token._id as string;
+        session.user.username = token.username as string;
       }
       return session;
     },
     async redirect({ url, baseUrl }) {
-      return `${baseUrl}/`;
-    },
+      return baseUrl;
+    }
   },
   pages: {
-    signIn: "/login",
+    signIn: "/login"
   },
   session: {
-    strategy: "jwt",
+    strategy: "jwt"
   },
   secret: process.env.NEXTAUTH_SECRET,
-  // The cookies section below ensures proper handling of session cookies for OAuth flows, especially in local development.
-  // Adjusting sameSite and secure options helps prevent 'State cookie was missing' errors.
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: "next-auth.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
+        secure: process.env.NODE_ENV === "production"
+      }
+    }
+  }
 };

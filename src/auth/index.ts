@@ -14,8 +14,6 @@ class Auth {
         this.dbconnect = options.dbconnect
     }
 
-
-
     async createSession({ userId, expiresIn }: { userId: string; expiresIn: number }) {
         if (!isValidObjectId(userId)) return { error: 'Invalid user ID' }
         try {
@@ -33,29 +31,40 @@ class Auth {
     }
 
     async deleteCurrentUsersSession() {
-        return { error: 'Session ID is no longer used' }
+        try {
+            const session = await this.getCurrentSession()
+            if (!session?.user) return { error: 'Not authenticated' }
+            await this.dbconnect()
+            await Session.deleteMany({ user: (session.user as any)._id })
+            return { success: 'Deleted current user session' }
+        } catch (error) {
+            return { error: "Couldn't delete current user session" }
+        }
     }
 
     async deleteCurrentUsersAllSessions() {
         try {
-            const res: any = await this.getCurrentSession()
-            if (res.error) return { error: res.error }
-            await Session.deleteMany({ user: (res.user as any)._id })
-            return { success: 'Deleted current users all session' }
+            const session = await this.getCurrentSession()
+            if (!session?.user) return { error: 'Not authenticated' }
+            await this.dbconnect()
+            await Session.deleteMany({ user: (session.user as any)._id })
+            return { success: 'Deleted all sessions for current user' }
         } catch (error) {
-            return { error: "Couldn't delete current users session" }
+            return { error: "Couldn't delete current user sessions" }
         }
     }
 
     async deleteSession(filter: { _id?: string; user?: string }) {
         if (!filter._id && !filter.user) {
-            return { error: 'Session ID or User ID, at least one is required' }
+            return { error: 'Session ID or User ID is required' }
         }
         try {
             await this.dbconnect()
             const deletedSessions = await Session.deleteMany(filter)
-            if (!deletedSessions.deletedCount) return { success: 'Session was not found with provied Session/User ID' }
-            return { success: filter.user ? 'Deleted sessions by user id' : 'Deleted session by session id' }
+            if (!deletedSessions.deletedCount) {
+                return { success: 'No sessions found with provided Session/User ID' }
+            }
+            return { success: filter.user ? 'Deleted sessions by user ID' : 'Deleted session by session ID' }
         } catch (error) {
             return { error: "Couldn't delete session" }
         }
@@ -64,8 +73,8 @@ class Auth {
     async deleteExpiredSessions() {
         try {
             await this.dbconnect()
-            await Session.deleteMany({ expiresAt: { $lte: new Date() } })
-            return { success: 'Deleted all expired sessions' }
+            const result = await Session.deleteMany({ expiresAt: { $lte: new Date() } })
+            return { success: `Deleted ${result.deletedCount} expired sessions` }
         } catch (error) {
             return { error: "Couldn't delete expired sessions" }
         }
@@ -74,16 +83,16 @@ class Auth {
     async deleteAllSessions() {
         try {
             await this.dbconnect()
-            await Session.deleteMany({})
-            return { success: 'Deleted all sessions' }
+            const result = await Session.deleteMany({})
+            return { success: `Deleted ${result.deletedCount} sessions` }
         } catch (error) {
-            return { error: "Couldn't delete expired sessions" }
+            return { error: "Couldn't delete all sessions" }
         }
     }
 
     async getCurrentUser() {
         const session = await this.getCurrentSession();
-        if (!session || !session.user) return { error: 'Not authenticated' };
+        if (!session?.user) return { error: 'Not authenticated' };
         return { user: session.user };
     }
 }

@@ -41,7 +41,7 @@ export default function Page() {
             return
         }
         setError('')
-        window.location.href = '/'
+        window.location.href = '/dashboard'
     }
 
     return (
@@ -132,9 +132,12 @@ export default function Page() {
                                 Sign-Up
                             </Button>
                             <div className="flex gap-3 items-center">
-                              
-                               <button onClick={() => signIn("google")}  type='button'>
-                                <FcGoogle className="h-8 w-8 text-[#EA4335]" title="Sign in with Google" />
+                               <button 
+                                 onClick={() => signIn("google", { callbackUrl: "/dashboard" })}  
+                                 type='button'
+                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                               >
+                                <FcGoogle className="h-8 w-8" title="Sign in with Google" />
                                </button>
                                 <button>
                                 <FaDiscord className="h-8 w-8 text-[#5865F2]" title="Sign in with Discord" />

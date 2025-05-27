@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SkillSwap
+
+A platform for developers to connect, share knowledge, and collaborate on projects.
+
+## Features
+
+- 🔐 **Authentication**
+  - Email/Password login
+  - Google OAuth integration
+  - Secure session management with NextAuth.js
+  - JWT-based authentication
+
+- 👤 **User Profiles**
+  - Customizable user profiles
+  - Profile picture support
+  - Skills management
+  - Bio and personal information
+
+- 🤝 **Matchmaking**
+  - Find developers with complementary skills
+  - Connect with potential collaborators
+  - Skill-based matching system
+
+- 💬 **Chat System**
+  - Real-time messaging
+  - Direct communication between users
+  - Chat history
+
+- 📚 **Resources**
+  - Learning materials
+  - Code snippets
+  - Development resources
+
+- 👨‍🏫 **Mentorship**
+  - Find mentors
+  - Become a mentor
+  - Structured mentorship programs
+
+- 💭 **Forum**
+  - Community discussions
+  - Q&A platform
+  - Knowledge sharing
+
+## Tech Stack
+
+- **Frontend**
+  - Next.js 14
+  - React
+  - Tailwind CSS
+  - Framer Motion
+  - Shadcn UI Components
+
+- **Backend**
+  - Next.js API Routes
+  - MongoDB
+  - Mongoose
+  - NextAuth.js
+
+- **Authentication**
+  - NextAuth.js
+  - JWT
+  - Google OAuth
+  - Argon2 password hashing
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/SkillSwap.git
+cd SkillSwap
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables
+Create a `.env.local` file with the following variables:
+```env
+MONGODB_URI=your_mongodb_uri
+NEXTAUTH_SECRET=your_nextauth_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+4. Run the development server
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
--   [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
--   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                    # Next.js app directory
+│   ├── (root)/            # Root layout and pages
+│   ├── api/               # API routes
+│   └── auth/              # Authentication routes
+├── components/            # React components
+├── models/               # Mongoose models
+├── actions/              # Server actions
+├── helpers/              # Utility functions
+└── validations/          # Data validation schemas
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Contributing
 
-## Deploy on Vercel
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Next.js team for the amazing framework
+- NextAuth.js for authentication
+- Shadcn UI for the beautiful components
+- The open-source community for inspiration and support

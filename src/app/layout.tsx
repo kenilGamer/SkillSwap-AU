@@ -5,6 +5,8 @@ import ProgressBar from '@/components/ProgressBar'
 import { Toaster } from '@/components/shadcn/ui/sonner'
 import { LoaderProvider, LoaderOverlay } from '@/components/GlobalLoader'
 import ReduxProvider from '@/components/ReduxProvider'
+import { NotificationToast } from '@/components/NotificationToast'
+import Providers from '@/components/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,14 +23,17 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <body suppressHydrationWarning={true} cz-shortcut-listen="true" className={inter.className}>
-                <ProgressBar />
-                <Toaster richColors />
-                <ReduxProvider>
-                    <LoaderProvider>
-                        <LoaderOverlay />
-                        {children}
-                    </LoaderProvider>
-                </ReduxProvider>
+                <Providers>
+                    <ProgressBar />
+                    <Toaster richColors />
+                    <ReduxProvider>
+                        <LoaderProvider>
+                            <LoaderOverlay />
+                            {children}
+                        </LoaderProvider>
+                    </ReduxProvider>
+                    <NotificationToast />
+                </Providers>
             </body>
         </html>
     )

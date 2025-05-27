@@ -7,8 +7,8 @@ export default async function Logout() {
     try {
         const cookieStore = await cookies()
         cookieStore.delete('session_id')
-        await auth.deleteCurrentUsersSession()
-        return { success: 'Successfully logged out' }
+        await auth.deleteCurrentUsersAllSessions()
+        return { success: 'Successfully logged out from all devices' }
     } catch (error) {
         return { error: 'Something went wrong' }
     }

@@ -15,7 +15,7 @@ export default function Chat({ messages }: { messages: any }) {
   const { chats } = useSnapshot(chatStore) as typeof chatStore
 
   return (
-    <div className="flex grow overflow-hidden">
+    <div className="flex grow overflow-hidden h-screen w-full">
       <div className="relative flex w-[330px] select-none flex-col py-3 shadow-[0px_0px_3px_#00000040]">
         <div className="relative mx-3">
           <MdSearch className="absolute left-2 top-1/2 size-5 -translate-y-1/2 text-black/60" />

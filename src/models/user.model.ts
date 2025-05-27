@@ -2,6 +2,7 @@ import mongoose, { Model, Schema } from 'mongoose';
 
 export interface IUser {
   _id: string;
+  role: string;
   name: string;
   username: string;
   email: string;
@@ -9,6 +10,7 @@ export interface IUser {
   password: string;
   bio: string;
   country: string;
+  plan: string;
   website: string;
   verified: boolean;
   image: string;
@@ -32,6 +34,12 @@ const userSchema = new Schema<IUser>(
       } 
     },
     bio: { type: String, default: '' },
+    role: { 
+      type: String, 
+      enum: ['user', 'admin'], 
+      default: 'user',
+      set: (v: string) => v.trim() // Trim whitespace from role
+    },
     country: { type: String, default: '' },
     website: { type: String, default: '' },
     verified: { type: Boolean, default: false },

@@ -60,7 +60,7 @@ export default function Chat() {
   }, [query, chats])
 
   return (
-    <div className="flex grow overflow-hidden">
+    <div className="flex grow overflow-hidden h-screen w-full">
       {/* Left Sidebar: Chat List */}
       <div className="relative flex w-[330px] select-none flex-col py-3 shadow-[0px_0px_3px_#00000040]">
         {/* Search Bar */}

@@ -7,6 +7,7 @@ interface User {
   email: string;
   name: string;
   username: string;
+  role: string;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -30,7 +31,8 @@ export const authOptions: NextAuthOptions = {
             id: "1",
             email: credentials.email,
             name: "Test User",
-            username: "testuser"
+            username: "testuser",
+            role: "user"
           };
           return user;
         } catch (error) {
@@ -55,6 +57,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
+        
         session.user.id = token.id as string;
       }
       return session;

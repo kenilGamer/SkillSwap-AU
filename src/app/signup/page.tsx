@@ -162,7 +162,7 @@ export default function Page() {
                             </Button>
                             <div className="flex gap-3 items-center">
                                <button 
-                                 onClick={() => signIn("google", { callbackUrl: "/dashboard" })}  
+                                 onClick={() => signIn("google", { callbackUrl: "" })}  
                                  type='button'
                                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                                >

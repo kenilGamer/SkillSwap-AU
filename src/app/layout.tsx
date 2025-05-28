@@ -7,6 +7,7 @@ import { LoaderProvider, LoaderOverlay } from '@/components/GlobalLoader'
 import ReduxProvider from '@/components/ReduxProvider'
 import { NotificationToast } from '@/components/NotificationToast'
 import Providers from '@/components/Providers'
+import { VerificationWarning } from '@/components/verification-warning'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,6 +30,7 @@ export default async function RootLayout({
                     <ReduxProvider>
                         <LoaderProvider>
                             <LoaderOverlay />
+                            <VerificationWarning />
                             {children}
                         </LoaderProvider>
                     </ReduxProvider>

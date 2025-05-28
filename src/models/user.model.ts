@@ -26,16 +26,14 @@ const userSchema = new Schema<IUser>(
       unique: true, 
       trim: true, 
       lowercase: true,
-      required: true,
-      index: true 
+      required: true
     },
     email: { 
       type: String, 
       trim: true, 
       lowercase: true,
       required: true, 
-      unique: true,
-      index: true 
+      unique: true
     },
     skills: { type: [String], default: [] },
     password: { 
@@ -69,7 +67,7 @@ const userSchema = new Schema<IUser>(
 
 userSchema.index({ skills: 1 });
 
-// Create case-insensitive indexes
+// Create case-insensitive indexes with collation
 userSchema.index({ email: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 userSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 

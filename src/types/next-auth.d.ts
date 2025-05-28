@@ -6,6 +6,7 @@ declare module "next-auth" {
     _id: string;
     username: string;
     role: string;
+    verified: boolean;
   }
   
   interface Session {
@@ -13,6 +14,7 @@ declare module "next-auth" {
       _id: string;
       username: string;
       role: string;
+      verified: boolean;
     };
   }
   
@@ -20,5 +22,6 @@ declare module "next-auth" {
     _id: string;
     username: string;
     role: string;
+    verified: boolean;
   }
 } 

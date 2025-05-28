@@ -25,7 +25,8 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             username: user.username,
-            role: 'user'
+            role: user.role,
+            verified: user.verified
           };
         }
         return null;
@@ -58,24 +59,27 @@ export const authOptions: NextAuthOptions = {
           if (existingUser) {
             // Existing user - update their info
             user._id = existingUser._id.toString();
-            user.username = existingUser.username.toLowerCase(); // Ensure username is lowercase
+            user.username = existingUser.username.toLowerCase();
             user.name = existingUser.name;
-            user.role = existingUser.role || 'user'; // Ensure role exists
+            user.role = existingUser.role || 'user';
+            user.verified = existingUser.verified; // Google emails are pre-verified
           } else {
             // New user - create account with lowercase email and username
             const newUser = await UserModel.create({
               email: email,
               name: profile?.name,
-              username: email?.split('@')[0].toLowerCase(), // Generate lowercase username from email
-              password: '', // Empty password for OAuth users
+              username: email?.split('@')[0].toLowerCase(),
+              password: '',
               authProvider: 'google',
-              role: 'user' // Set default role for new users
+              role: 'user',
+              verified: true // Google emails are pre-verified
             });
             
             user._id = newUser._id.toString();
             user.username = newUser.username;
             user.name = newUser.name;
             user.role = newUser.role;
+            user.verified = true;
           }
           return true;
         } catch (error) {
@@ -90,6 +94,7 @@ export const authOptions: NextAuthOptions = {
         token._id = user._id;
         token.username = user.username;
         token.role = user.role;
+        token.verified = user.verified;
       }
       return token;
     },
@@ -98,6 +103,7 @@ export const authOptions: NextAuthOptions = {
         session.user._id = token._id as string;
         session.user.username = token.username as string;
         session.user.role = token.role as string;
+        session.user.verified = token.verified as boolean;
       }
       return session;
     },

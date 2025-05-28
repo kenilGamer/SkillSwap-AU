@@ -8,8 +8,20 @@ import { Bell, Check, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { io, Socket } from 'socket.io-client'
 
-// Initialize Socket.IO client
-const socket = io("http://localhost:4000");
+// Initialize Socket.IO client with dynamic URL
+const getSocketUrl = () => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    return `${baseUrl}/api/socket`;
+};
+
+const socket = io(getSocketUrl(), {
+    path: '/api/socket',
+    transports: ['websocket', 'polling'],
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    timeout: 20000,
+    autoConnect: false // We'll connect manually after session is available
+});
 
 interface Notification {
     id: string
@@ -24,39 +36,47 @@ export function NotificationToast() {
     const { data: session } = useSession()
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [isOpen, setIsOpen] = useState(false)
+    const [isConnected, setIsConnected] = useState(false)
 
     // Initialize socket connection
     useEffect(() => {
         if (!session?.user) {
-            console.log('No session user found');
+            console.log('No session user found, disconnecting socket');
+            socket.disconnect();
+            setIsConnected(false);
             return;
         }
 
         console.log('Setting up socket connection...');
         console.log('Session user:', session.user);
 
+        const connectSocket = () => {
+            if (!socket.connected) {
+                console.log('Connecting socket...');
+                socket.connect();
+            }
+        };
+
         socket.on('connect', () => {
-            console.log('Socket connected successfully');
-            console.log('Socket ID:', socket.id);
-            console.log('User ID:', session.user.id);
+            console.log('Socket connected, joining user room:', session.user.id);
+            setIsConnected(true);
             socket.emit('join', session.user.id);
         });
 
         socket.on('connect_error', (error) => {
             console.error('Socket connection error:', error);
+            setIsConnected(false);
+        });
+
+        socket.on('disconnect', (reason) => {
+            console.log('Socket disconnected:', reason);
+            setIsConnected(false);
         });
 
         socket.on('notification', (newNotification: Notification) => {
             console.log('Received notification:', newNotification);
-            setNotifications(prev => {
-                console.log('Previous notifications:', prev);
-                const updated = [newNotification, ...prev];
-                console.log('Updated notifications:', updated);
-                return updated;
-            });
+            setNotifications(prev => [newNotification, ...prev]);
             
-            // Show toast for new notification
-            console.log('Showing toast for notification:', newNotification.title);
             toast(newNotification.title, {
                 description: newNotification.message,
                 duration: 5000,
@@ -72,11 +92,16 @@ export function NotificationToast() {
             });
         });
 
+        // Connect socket
+        connectSocket();
+
         return () => {
             console.log('Cleaning up socket listeners');
             socket.off('connect');
             socket.off('connect_error');
+            socket.off('disconnect');
             socket.off('notification');
+            socket.disconnect();
         };
     }, [session]);
 

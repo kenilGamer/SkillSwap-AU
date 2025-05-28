@@ -12,11 +12,13 @@ import {
   FileText,
   Shield,
   CreditCard,
+  UserCog,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Mentorship', href: '/admin/mentorship', icon: UserCog },
   { name: 'Prompts', href: '/admin/prompts', icon: FileText },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
   { name: 'Feedback', href: '/admin/feedback', icon: MessageSquare },

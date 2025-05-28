@@ -1,26 +1,54 @@
 'use server'
 
-import auth from '@/auth/auth'
-import formatUser from '@/helpers/formatUser'
-import User from '@/models/user.model'
-import { userValidation } from '@/validations/user.validation'
-import { z } from 'zod'
-import { IUser } from '@/models/user.model'
-
-export default async function updateProfile(data: z.infer<typeof userValidation>) {
-    const res = await auth.getCurrentUser()
-    if (res.error || !res.user) return { error: 'Something went wrong' }
-
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import User  from '@/models/user.model'
+import { UserFormData } from '@/lib/validations/user'
+import { revalidatePath } from 'next/cache'
+import dbconnect from '@/helpers/dbconnect'
+export async function updateProfile(data: UserFormData) {
     try {
-        const user = await User.findByIdAndUpdate(res.user._id, data, {
-            new: true,
-        })
-        return { success: 'Your profile has been updated', user: formatUser(user as any) }
-    } catch (error: any) {
-        if (error.code === 11000) {
-            if (error.keyValue?.username) return { error: 'Username already in use' }
-            return { error: 'Email already in use' }
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.email) {
+            return { success: false, error: 'Not authenticated' }
         }
-        return { error: 'Something went wrong' }
+
+        await dbconnect()
+
+        // Check if username is taken by another user
+        const existingUser = await User.findOne({
+            username: data.username,
+            email: { $ne: session.user.email }
+        })
+
+        if (existingUser) {
+            return { success: false, error: 'Username is already taken' }
+        }
+
+        // Update user profile
+        const updatedUser = await User.findOneAndUpdate(
+            { email: session.user.email },
+            { 
+                $set: {
+                    name: data.name,
+                    username: data.username,
+                    bio: data.bio || '',
+                    country: data.country || '',
+                    website: data.website || '',
+                    skills: data.skills || []
+                }
+            },
+            { new: true }
+        )
+
+        if (!updatedUser) {
+            return { success: false, error: 'User not found' }
+        }
+
+        revalidatePath('/')
+        return { success: true, user: updatedUser }
+    } catch (error) {
+        console.error('Error updating profile:', error)
+        return { success: false, error: 'Failed to update profile' }
     }
 }

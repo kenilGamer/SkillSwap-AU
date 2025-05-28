@@ -1,27 +1,13 @@
 import "next-auth";
 import { DefaultUser } from "next-auth";
+import { IUser } from '@/models/user.model'
 
 declare module "next-auth" {
-  interface User extends DefaultUser {
-    _id: string;
-    username: string;
-    role: string;
-    verified: boolean;
-  }
+  interface User extends IUser {}
   
   interface Session {
-    user: User & {
-      _id: string;
-      username: string;
-      role: string;
-      verified: boolean;
-    };
+    user: User
   }
   
-  interface JWT {
-    _id: string;
-    username: string;
-    role: string;
-    verified: boolean;
-  }
+  interface JWT extends IUser {}
 } 

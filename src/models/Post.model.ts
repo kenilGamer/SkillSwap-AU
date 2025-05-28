@@ -10,6 +10,7 @@ export interface IPost {
     githubLink?: string //Optional Field
     star: number
     createdAt: Date
+    updatedAt: Date
     category: string
 }
 

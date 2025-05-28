@@ -1,162 +1,155 @@
 'use client';
 
-import { Button } from '@/components/Button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/shadcn/ui/form';
-import { Input } from '@/components/shadcn/ui/input';
-import { userValidation } from '@/validations/user.validation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useState } from 'react';
-import { IoAlertCircleOutline } from 'react-icons/io5';
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { updateProfile } from '@/actions/user/data/updateProfile'
+import { userValidation } from '@/lib/validations/user'
+import { IUser } from '@/models/user.model'
+import userStore from '@/store/user.store'
 
-import { MdModeEdit } from 'react-icons/md';
+export default function SetupPage() {
+    const router = useRouter()
+    const { data: session, status } = useSession()
+    const [loading, setLoading] = useState(false)
+    const [formData, setFormData] = useState({
+        name: '',
+        username: '',
+        bio: '',
+        country: '',
+        website: '',
+        skills: [] as string[]
+    })
 
-export default function Page() {
-    const form = useForm<z.infer<typeof userValidation>>({
-        resolver: zodResolver(userValidation),
-        defaultValues: {
-            name: '',
-            username: '',
-            country: '',
-            website: '',
-            skills: [],
-            bio: '',
-        },
-    });
-
-    const [error, setError] = useState('');
-    const [avatar, setAvatar] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(null);
-
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setAvatar(file);
-            setPreview(URL.createObjectURL(file)); // Preview image
+    useEffect(() => {
+        if (status === 'authenticated' && session?.user) {
+            // If user already has a complete profile, redirect to home
+            if (session.user.name && session.user.username) {
+                router.push('/')
+            }
+            // Pre-fill form with existing data
+            setFormData({
+                name: session.user.name || '',
+                username: session.user.username || '',
+                bio: session.user.bio || '',
+                country: session.user.country || '',
+                website: session.user.website || '',
+                skills: session.user.skills || []
+            })
         }
-    };
+    }, [session, status, router])
 
-    async function onSubmit(values: any) {
-        setError('');
-        const formData = new FormData();
-
-        formData.append('name', values.name);
-        formData.append('username', values.username);
-        formData.append('country', values.country);
-        formData.append('website', values.website);
-        formData.append('skills', JSON.stringify(values.skills));
-        formData.append('bio', values.bio);
-        if (avatar) {
-            formData.append('avatar', avatar);
-        }
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
 
         try {
-            const res = await fetch('/api/upload/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            const data = await res.json();
-            if (data.error) {
-                setError(data.error);
-                return;
+            const validate = userValidation.safeParse(formData)
+            if (!validate.success) {
+                toast.error('Please fill in all required fields correctly')
+                return
             }
 
-            window.location.href = '/';
-        } catch (err) {
-            setError('Something went wrong');
+            const res = await updateProfile(validate.data)
+            if (res.success) {
+                toast.success('Profile setup complete!')
+                userStore.user = res.user as IUser
+                router.push('/')
+            } else {
+                toast.error(res.error || 'Failed to update profile')
+            }
+        } catch (error) {
+            toast.error('An error occurred')
+            console.error(error)
+        } finally {
+            setLoading(false)
         }
     }
 
+    if (status === 'loading') {
+        return <div>Loading...</div>
+    }
+
+    if (status === 'unauthenticated') {
+        router.push('/login')
+        return null
+    }
+
     return (
-        <div className="accent-bg flex h-screen">
-            <div className="flex basis-1/2 items-center justify-center">
-                <div className="flex justify-center gap-4">
-                    <div className="aspect-square h-36">
-                        <img className="h-full" src="logo.png" alt="" />
-                    </div>
-                    <div className="w-1/2">
-                        <h1 className="text-[50px] font-medium text-[#002C5D]">SKILLSWAP</h1>
-                        <p className="text-[20px]">Connect with Developers and the world around them on SkillSwap.</p>
-                    </div>
-                </div>
-            </div>
-            <div className="flex basis-1/2 items-center justify-center overflow-hidden p-10">
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full max-w-[400px] flex-col items-center gap-7 rounded-2xl bg-white px-5 py-7 shadow-md">
-
-                        {/* Image Upload Section */}
-                        <input type="file" name="avatar" id="avatar" onChange={handleAvatarChange} hidden />
-                        <div className="flex items-center justify-center w-full gap-10">
-                            <div className=''>
-                                <h1 className='font-[900] uppercase text-2xl'>Welcome !</h1>
-                            </div>
-                            <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center relative">
-                                {preview ? (
-                                    <img src={preview} alt="Avatar Preview" className="w-full h-full rounded-full object-cover border-1 border-black" />
-                                ) : (
-                                    <MdModeEdit className="text-white text-2xl cursor-pointer" onClick={() => document.getElementById('avatar')?.click()} />
-                                )}
-                            </div>
+        <div className="container max-w-2xl py-10">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Complete Your Profile</CardTitle>
+                    <CardDescription>
+                        Tell us a bit about yourself to get started
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Name *</Label>
+                            <Input
+                                id="name"
+                                value={formData.name}
+                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                required
+                            />
                         </div>
 
-                        {/* Form Fields */}
-                        <div className='flex gap-5 w-full'>
-                            <div className='flex flex-col gap-5 w-1/2'>
-                                <FormField control={form.control} name="name" rules={{ required: 'Name is required' }} render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Name</FormLabel>
-                                        <FormControl><Input placeholder="Your name" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-
-                                <FormField control={form.control} name="username" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Username</FormLabel>
-                                        <FormControl><Input placeholder="enter your username" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-
-                                <FormField control={form.control} name="country" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Country</FormLabel>
-                                        <FormControl><Input placeholder="" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-                            </div>
-                            <div className='flex flex-col gap-5 w-1/2'>
-                                <FormField control={form.control} name="website" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Website</FormLabel>
-                                        <FormControl><Input placeholder="www.example.com" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-
-                                <FormField control={form.control} name="skills" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Skills</FormLabel>
-                                        <FormControl><Input placeholder="Enter your coding skills (comma separated)" value={field.value?.join(', ') || ''} onChange={e => field.onChange(e.target.value.split(',').map(s => s.trim()))} /></FormControl>
-                                    </FormItem>
-                                )} />
-                                <FormField control={form.control} name="bio" render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel>Bio</FormLabel>
-                                        <FormControl><Input type="text" placeholder="Tell us about yourself" {...field} /></FormControl>
-                                    </FormItem>
-                                )} />
-                            </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="username">Username *</Label>
+                            <Input
+                                id="username"
+                                value={formData.username}
+                                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                                required
+                            />
                         </div>
-                        {error && (
-                            <div className="w-full flex items-center gap-3 bg-red-100 px-3 py-2 text-sm font-medium text-red-400">
-                                <IoAlertCircleOutline className="text-base" /> {error}
-                            </div>
-                        )}
 
-                        <Button className="w-full">Sign-Up</Button>
+                        <div className="space-y-2">
+                            <Label htmlFor="bio">Bio</Label>
+                            <Textarea
+                                id="bio"
+                                value={formData.bio}
+                                onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                                placeholder="Tell us about yourself..."
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="country">Country</Label>
+                            <Input
+                                id="country"
+                                value={formData.country}
+                                onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                                placeholder="Where are you from?"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="website">Website</Label>
+                            <Input
+                                id="website"
+                                type="url"
+                                value={formData.website}
+                                onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                                placeholder="https://your-website.com"
+                            />
+                        </div>
+
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? 'Saving...' : 'Complete Setup'}
+                        </Button>
                     </form>
-                </Form>
-            </div>
+                </CardContent>
+            </Card>
         </div>
-    );
+    )
 }

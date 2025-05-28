@@ -1,7 +1,7 @@
 'use client'
 
 import { Badge } from '@/components/shadcn/ui/badge'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import EditProfile from './EditProfile'
 import { useSnapshot } from 'valtio'
 import userStore from '@/store/user.store'
@@ -10,6 +10,16 @@ import RequirementCard, { IPropRequirementCard } from '@/components/root/Require
 
 export default function Profile({ posts }: { posts: IPost[] }) {
     const { user } = useSnapshot(userStore) as typeof userStore
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) {
+        return null // or a loading skeleton
+    }
+
     return (
         <div className="flex w-full flex-col gap-5 overflow-auto bg-accent p-5">
             <div className="flex items-center justify-between">
@@ -18,15 +28,17 @@ export default function Profile({ posts }: { posts: IPost[] }) {
             </div>
             <div className="flex flex-col gap-5 rounded-xl border bg-white p-5 shadow-sm">
                 <div className="flex items-center gap-4">
-                    <div className=" h-fit  shrink-0 flex items-center justify-center overflow-hidden rounded-xl bg-red-200">
+                    <div className="h-fit shrink-0 flex items-center justify-center overflow-hidden rounded-xl bg-red-200">
                         {user?.image ? (
                             <img
-                                className=" h-32 w-32 object-cover"
+                                className="h-32 w-32 object-cover"
                                 src={user?.image || '/avatar/default.png'}
                                 alt="Profile photo"
                             />
                         ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-blue-300 text-3xl">{user?.name?.split('')[0]}</div>
+                            <div className="flex h-32 w-32 items-center justify-center bg-blue-300 text-3xl">
+                                {mounted && user?.name ? user.name.charAt(0).toUpperCase() : ''}
+                            </div>
                         )}
                     </div>
                     <div className="flex w-full flex-col gap-4">

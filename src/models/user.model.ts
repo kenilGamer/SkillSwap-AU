@@ -126,13 +126,17 @@ userSchema.index({ email: 1 }, { unique: true, collation: { locale: 'en', streng
 userSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 
 // Add virtual for follower count
-userSchema.virtual('followerCount').get(function(this: IUser) {
-  return this.followers.length;
+userSchema.virtual('followerCount').get(function(this: any) {
+    if (!this || typeof this !== 'object') return 0;
+    const followers = this.followers;
+    return Array.isArray(followers) ? followers.length : 0;
 });
 
 // Add virtual for following count
-userSchema.virtual('followingCount').get(function(this: IUser) {
-  return this.following.length;
+userSchema.virtual('followingCount').get(function(this: any) {
+    if (!this || typeof this !== 'object') return 0;
+    const following = this.following;
+    return Array.isArray(following) ? following.length : 0;
 });
 
 // Prevent duplicate model registration

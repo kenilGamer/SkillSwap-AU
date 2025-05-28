@@ -21,8 +21,22 @@ export interface IUser {
 const userSchema = new Schema<IUser>(
   {
     name: { type: String, required: true, trim: true },
-    username: { type: String, unique: true, trim: true, lowercase: true, required: true },
-    email: { type: String, trim: true, lowercase: true, required: true, unique: true },
+    username: { 
+      type: String, 
+      unique: true, 
+      trim: true, 
+      lowercase: true,
+      required: true,
+      index: true 
+    },
+    email: { 
+      type: String, 
+      trim: true, 
+      lowercase: true,
+      required: true, 
+      unique: true,
+      index: true 
+    },
     skills: { type: [String], default: [] },
     password: { 
       type: String, 
@@ -47,10 +61,17 @@ const userSchema = new Schema<IUser>(
     followers: { type: [String], default: [] },
     following: { type: [String], default: [] },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    collation: { locale: 'en', strength: 2 }
+  }
 );
 
 userSchema.index({ skills: 1 });
+
+// Create case-insensitive indexes
+userSchema.index({ email: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
+userSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 
 // ✅ Ensure model name is 'User' (not 'users')
 const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', userSchema);

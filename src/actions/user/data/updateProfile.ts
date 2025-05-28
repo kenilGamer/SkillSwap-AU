@@ -12,7 +12,7 @@ export default async function updateProfile(data: z.infer<typeof userValidation>
     if (res.error || !res.user) return { error: 'Something went wrong' }
 
     try {
-        const user = await User.findByIdAndUpdate((res.user as IUser)._id, data, {
+        const user = await User.findByIdAndUpdate(res.user._id, data, {
             new: true,
         })
         return { success: 'Your profile has been updated', user: formatUser(user as any) }

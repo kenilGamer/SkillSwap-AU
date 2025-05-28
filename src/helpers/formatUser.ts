@@ -19,5 +19,7 @@ export default function formatUser(user: Partial<IUser> | undefined): IUser {
         image: safeString(user?.image),
         followers: user?.followers || [],
         following: user?.following || [],
+        role: user?.role || 'user',
+        plan: user?.plan || '',
     };
 }

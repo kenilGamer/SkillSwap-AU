@@ -48,28 +48,34 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google") {
         await dbConnect();
         try {
+          // Convert email to lowercase for case-insensitive comparison
+          const email = profile?.email?.toLowerCase();
+          
           const existingUser = await UserModel.findOne({
-            email: profile?.email
+            email: email
           });
 
           if (existingUser) {
             // Existing user - update their info
             user._id = existingUser._id.toString();
-            user.username = existingUser.username;
+            user.username = existingUser.username.toLowerCase(); // Ensure username is lowercase
             user.name = existingUser.name;
+            user.role = existingUser.role || 'user'; // Ensure role exists
           } else {
-            // New user - create account
+            // New user - create account with lowercase email and username
             const newUser = await UserModel.create({
-              email: profile?.email,
+              email: email,
               name: profile?.name,
-              username: profile?.email?.split('@')[0], // Generate username from email
+              username: email?.split('@')[0].toLowerCase(), // Generate lowercase username from email
               password: '', // Empty password for OAuth users
-              authProvider: 'google'
+              authProvider: 'google',
+              role: 'user' // Set default role for new users
             });
             
             user._id = newUser._id.toString();
             user.username = newUser.username;
             user.name = newUser.name;
+            user.role = newUser.role;
           }
           return true;
         } catch (error) {

@@ -1,77 +1,141 @@
-import mongoose, { Model, Schema } from 'mongoose';
+import mongoose, { Model, Schema, Document } from 'mongoose';
 
-export interface IUser {
+// Define user roles as a const enum for better typex safety
+export const UserRole = {
+  USER: 'user',
+  Mentor : 'mentor',
+  ADMIN: 'admin',
+} as const;
+
+export type UserRoleType = typeof UserRole[keyof typeof UserRole];
+
+// Extend Document to include Mongoose document properties
+export interface IUser extends Document {
   _id: string;
-  role: string;
+  role: UserRoleType;
   name: string;
   username: string;
   email: string;
   skills: string[];
-  password: string;
+  password?: string; // Make password optional since it's not always required
   bio: string;
   country: string;
-  plan: string;
+  plan?: string; // Make plan optional since it's not defined in schema
   website: string;
   verified: boolean;
   image: string;
   followers: string[];
   following: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
+
+// Define schema options separately for better readability
+const schemaOptions = {
+  timestamps: true,
+  collation: { locale: 'en', strength: 2 },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+};
 
 const userSchema = new Schema<IUser>(
   {
-    name: { type: String, required: true, trim: true },
+    name: { 
+      type: String, 
+      required: [true, 'Name is required'], 
+      trim: true,
+      minlength: [2, 'Name must be at least 2 characters long']
+    },
     username: { 
       type: String, 
-      unique: true, 
+      required: [true, 'Username is required'],
       trim: true, 
       lowercase: true,
-      required: true
+      minlength: [3, 'Username must be at least 3 characters long'],
+      match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers and underscores']
     },
     email: { 
       type: String, 
+      required: [true, 'Email is required'],
       trim: true, 
+      unique: true,
       lowercase: true,
-      required: true, 
-      unique: true
+      match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
     },
-    skills: { type: [String], default: [] },
+    skills: { 
+      type: [String], 
+      default: [],
+      validate: {
+        validator: (skills: string[]) => skills.length <= 10,
+        message: 'Cannot have more than 10 skills'
+      }
+    },
     password: { 
-      type: String, 
-      required: function (this: IUser) { 
-        // Only require password if not a Google user (customize as needed)
-        // For example, if you have a 'provider' field:
-        // return this.provider !== 'google';
-        return false; // For now, just make it optional for all
-      } 
+      type: String,
+      minlength: [6, 'Password must be at least 6 characters long'],
+      select: false // Don't include password in queries by default
     },
-    bio: { type: String, default: '' },
+    bio: { 
+      type: String, 
+      default: '',
+      maxlength: [500, 'Bio cannot be longer than 500 characters']
+    },
     role: { 
       type: String, 
-      enum: ['user', 'admin'], 
-      default: 'user',
-      set: (v: string) => v.trim() // Trim whitespace from role
+      enum: Object.values(UserRole),
+      default: UserRole.USER,
+      set: (v: string) => v.trim()
     },
-    country: { type: String, default: '' },
-    website: { type: String, default: '' },
-    verified: { type: Boolean, default: false },
-    image: { type: String, default: '' },
-    followers: { type: [String], default: [] },
-    following: { type: [String], default: [] },
+    country: { 
+      type: String, 
+      default: '',
+      trim: true
+    },
+    website: { 
+      type: String, 
+      default: '',
+      trim: true,
+      match: [/^https?:\/\/.+/, 'Please enter a valid URL']
+    },
+    verified: { 
+      type: Boolean, 
+      default: false 
+    },
+    image: { 
+      type: String, 
+      default: '',
+      match: [/^https?:\/\/.+/, 'Please enter a valid image URL']
+    },
+    followers: [{ 
+      type: Schema.Types.ObjectId, 
+      ref: 'User',
+      default: []
+    }],
+    following: [{ 
+      type: Schema.Types.ObjectId, 
+      ref: 'User',
+      default: []
+    }]
   },
-  { 
-    timestamps: true,
-    collation: { locale: 'en', strength: 2 }
-  }
+  schemaOptions
 );
 
+// Add indexes
 userSchema.index({ skills: 1 });
-
-// Create case-insensitive indexes with collation
 userSchema.index({ email: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 userSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 
-// ✅ Ensure model name is 'User' (not 'users')
-const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
+// Add virtual for follower count
+userSchema.virtual('followerCount').get(function(this: IUser) {
+  return this.followers.length;
+});
+
+// Add virtual for following count
+userSchema.virtual('followingCount').get(function(this: IUser) {
+  return this.following.length;
+});
+
+// Prevent duplicate model registration
+const User = (mongoose.models.User as Model<IUser>) || mongoose.model<IUser>('User', userSchema);
 
 export default User;

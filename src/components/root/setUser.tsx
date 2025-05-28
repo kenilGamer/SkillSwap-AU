@@ -2,8 +2,12 @@
 
 import { IUser } from '@/models/user.model'
 import userStore from '@/store/user.store'
+import { useEffect } from 'react'
 
 export default function SetUser({ user }: { user: IUser }) {
-    userStore.user = user
-    return <div></div>
+    useEffect(() => {
+        userStore.user = user
+    }, [user])
+    
+    return null
 }

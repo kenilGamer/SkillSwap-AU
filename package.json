@@ -8,7 +8,9 @@
         "start": "next start",
         "lint": "next lint",
         "add": "npx shadcn-ui@latest add",
-        "format": "npx prettier --write ."
+        "format": "npx prettier --write .",
+        "socket": "ts-node server.ts",
+        "dev:all": "concurrently \"npm run dev\" \"npm run socket\""
     },
     "dependencies": {
         "@headlessui/react": "^2.2.4",
@@ -32,7 +34,7 @@
         "bcryptjs": "^3.0.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
-        "cmdk": "^1.0.0",
+        "cmdk": "^1.1.1",
         "date-fns": "^4.1.0",
         "express": "^4.21.2",
         "formidable": "^3.5.2",
@@ -71,6 +73,7 @@
         "@types/react-dom": "^19.1.5",
         "@types/socket.io": "^3.0.1",
         "@types/uuid": "^9.0.8",
+        "concurrently": "^8.2.2",
         "eslint": "^8",
         "eslint-config-next": "^15.3.2",
         "nodemon": "^3.1.10",

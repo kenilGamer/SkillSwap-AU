@@ -10,11 +10,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import countries from '@/constants/countries'
 import { userValidation } from '@/validations/user.validation'
 import { updateProfile } from '@/actions/user/data/updateProfile'
-import callPromiseWithToast from '@/helpers/callPromiseWithToast'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/shadcn/ui/dialog'
 import userStore from '@/store/user.store'
 import { toast } from 'react-hot-toast'
 import formatUser from '@/helpers/formatUser'
+
+interface ValidationErrors {
+    name?: string[];
+    username?: string[];
+    country?: string[];
+    website?: string[];
+    bio?: string[];
+    skills?: string[];
+}
 
 export default function EditProfile({ user }: { user: IUserClient }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -26,7 +34,7 @@ export default function EditProfile({ user }: { user: IUserClient }) {
     const [country, setCountry] = useState(user.country || '')
     const [website, setWebsite] = useState(user.website || '')
     const [bio, setBio] = useState(user.bio)
-    const [error, setError] = useState<any>({})
+    const [error, setError] = useState<ValidationErrors>({})
     const [image, setImage] = useState(user.image || '')
     const [imageFile, setImageFile] = useState<File | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)

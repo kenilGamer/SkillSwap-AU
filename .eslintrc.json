@@ -19,6 +19,8 @@
         "@typescript-eslint/no-empty-interface": ["error", {
             "allowSingleExtends": true
         }],
+        "@typescript-eslint/no-unused-expressions": "error",
+        "@typescript-eslint/no-empty-object-type": "off",
         "prefer-const": "error"
     }
 }

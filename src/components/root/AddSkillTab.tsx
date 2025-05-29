@@ -30,7 +30,9 @@ export default function AddSkillTab({ selectedSkills, setSelectedSkills, skillSe
     }
 
     function hideSkillsTab(e: MouseEvent) {
-        !skillsTab.current?.contains(e.target as Node) && setSkillDropdownOpen(false)
+        if (!skillsTab.current?.contains(e.target as Node)) {
+            setSkillDropdownOpen(false);
+        }
     }
 
     useEffect(() => {

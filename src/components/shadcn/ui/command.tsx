@@ -104,4 +104,7 @@ const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanE
 }
 CommandShortcut.displayName = 'CommandShortcut'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CommandProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive> {}
+
 export { Command, CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, CommandSeparator }

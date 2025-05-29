@@ -43,7 +43,8 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           image: user.image,
           role: user.role || UserRole.USER,
-          username: user.username
+          username: user.username,
+          verified: user.verified || false
         } as User;
       }
     }),
@@ -68,7 +69,8 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          username: user.username
+          username: user.username,
+          verified: user.verified
         };
       }
       return token;
@@ -82,7 +84,8 @@ export const authOptions: NextAuthOptions = {
           email: token.email,
           name: token.name,
           role: token.role,
-          username: token.username
+          username: token.username,
+          verified: token.verified
         }
       };
     }

@@ -1,4 +1,6 @@
-export function pickRandom(val: any, roundOff?: boolean) {
+type RandomizableValue = string | number | Array<unknown> | Record<string, unknown>;
+
+export function pickRandom(val: RandomizableValue, roundOff?: boolean) {
     switch (typeof val) {
         case 'object':
             if (Array.isArray(val)) {

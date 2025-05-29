@@ -1,19 +1,28 @@
 import { proxy } from 'valtio';
 import { devtools } from 'valtio/utils';
 
+interface Chat {
+    id: string;
+    participants: string[];
+    lastMessage?: {
+        content: string;
+        sender: string;
+        timestamp: Date;
+    };
+    unreadCount?: number;
+}
+
 const chatStore = proxy({
-  chats: [] as any[],
-  openedChat: null as any | null,
+    chats: [] as Chat[],
+    openedChat: null as Chat | null,
 
-  setChats(chats: any[]) {
+    setChats(chats: Chat[]) {
+        chatStore.chats = chats;
+    },
 
-    chatStore.chats = chats;
-  },
-
-  setOpenedChat(chat: any) {
-
-    chatStore.openedChat = chat;
-  },
+    setOpenedChat(chat: Chat | null) {
+        chatStore.openedChat = chat;
+    },
 });
 
 devtools(chatStore, { name: 'chatStore', enabled: true });

@@ -7,7 +7,11 @@ import { UserFormData } from '@/lib/validations/user'
 import { revalidatePath } from 'next/cache'
 import dbconnect from '@/helpers/dbconnect'
 
-export async function updateProfile(data: UserFormData) {
+interface UpdateProfileData extends UserFormData {
+    image?: string;
+}
+
+export async function updateProfile(data: UpdateProfileData) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.email) {
@@ -36,7 +40,8 @@ export async function updateProfile(data: UserFormData) {
                     bio: data.bio || '',
                     country: data.country || '',
                     website: data.website || '',
-                    skills: data.skills || []
+                    skills: data.skills || [],
+                    ...(data.image && { image: data.image })
                 }
             },
             { new: true }

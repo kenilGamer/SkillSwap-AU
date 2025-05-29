@@ -4,8 +4,8 @@ export function pickRandom(val: any, roundOff?: boolean) {
             if (Array.isArray(val)) {
                 return val[Math.floor(Math.random() * val.length)]
             } else {
-                let keysArr = Object.keys(val)
-                let prop = keysArr[Math.floor(Math.random() * keysArr.length)]
+                const keysArr = Object.keys(val)
+                const prop = keysArr[Math.floor(Math.random() * keysArr.length)]
                 return { [prop]: val[prop] }
             }
         case 'number':

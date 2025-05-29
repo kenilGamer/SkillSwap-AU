@@ -1,5 +1,5 @@
 import auth from '@/auth/auth'
-import Post, { IPost } from '@/models/Post.model'
+import Post from '@/models/Post.model'
 import { IUser } from '@/models/user.model'
 
 export default async function getMyPosts() {

@@ -4,7 +4,7 @@ import ForumQuestionForm from '@/components/root/ForumQuestionForm';
 import ForumQuestionCard from '@/components/root/ForumQuestionCard';
 import userStore from '@/store/user.store';
 import { useSnapshot } from 'valtio';
-import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader, DialogClose } from '@/components/shadcn/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader } from '@/components/shadcn/ui/dialog';
 import { Button } from '@/components/Button';
 import { FiMessageSquare, FiPlus } from 'react-icons/fi';
 
@@ -22,12 +22,6 @@ interface ForumAnswer {
   text: string;
   userAvatarUrl?: string;
   createdAt?: string;
-}
-
-function formatDate(date: Date | string) {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 export default function ForumPage() {

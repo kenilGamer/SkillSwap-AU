@@ -7,7 +7,11 @@ interface ForumQuestionCardProps {
   userAvatarUrl?: string;
   createdAt?: string;
   isNew?: boolean;
-  answers?: { userName: string; text: string }[];
+  answers?: { 
+    userName: string; 
+    /* eslint-disable-next-line no-unused-vars */
+    text: string;
+  }[];
   onAddAnswer?: (text: string) => void;
   children?: React.ReactNode;
 }
@@ -52,9 +56,9 @@ export default function ForumQuestionCard({ title, description, userName = 'Anon
           <div className="mt-2">
             <h4 className="font-semibold text-gray-700 mb-2">Answers</h4>
             <ul className="space-y-2">
-              {answers.map((a, i) => (
-                <li key={i} className="bg-white rounded p-2 border border-gray-100">
-                  <span className="font-medium text-blue-700">{a.userName}:</span> <span>{a.text}</span>
+              {answers.map((answer, index) => (
+                <li key={index} className="bg-white rounded p-2 border border-gray-100">
+                  <span className="font-medium text-blue-700">{answer.userName}:</span> <span>{answer.text}</span>
                 </li>
               ))}
             </ul>
@@ -84,4 +88,4 @@ export default function ForumQuestionCard({ title, description, userName = 'Anon
       </div>
     </div>
   );
-} 
+}

@@ -1,4 +1,3 @@
-import { Skeleton } from '@/components/shadcn/ui/skeleton'
 
 export default function RootLoading() {
   return (

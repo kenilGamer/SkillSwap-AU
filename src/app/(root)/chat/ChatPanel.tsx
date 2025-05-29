@@ -2,7 +2,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdDelete, MdOutlineReport } from "react-icons/md";
 import { BsSend } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
-import { MutableRefObject, useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 import userStore from "@/store/user.store";
 import chatStore from "@/store/chat.store";

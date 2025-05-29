@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
@@ -12,7 +12,6 @@ import {
   Settings,
   Users,
   Shield,
-  Mail,
   Save,
   AlertCircle,
 } from 'lucide-react';
@@ -38,32 +37,13 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Check authentication status
-    if (status === 'unauthenticated') {
-      router.push('/login');
-      return;
-    }
-
-    // Check if user is admin
-    if (status === 'authenticated' && session?.user?.role !== 'admin') {
-      router.push('/');
-      return;
-    }
-
-    // Only fetch settings if user is authenticated and is admin
-    if (status === 'authenticated' && session?.user?.role === 'admin') {
-      fetchSettings();
-    }
-  }, [status, session, router]);
-
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/settings', {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Important: include credentials for session
+        credentials: 'include',
       });
       
       if (!response.ok) {
@@ -82,7 +62,23 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+
+    if (status === 'authenticated' && session?.user?.role !== 'admin') {
+      router.push('/');
+      return;
+    }
+
+    if (status === 'authenticated' && session?.user?.role === 'admin') {
+      fetchSettings();
+    }
+  }, [status, session, router, fetchSettings]);
 
   const handleToggle = (setting: keyof SettingsData) => {
     if (settings) {
@@ -115,7 +111,7 @@ export default function SettingsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Important: include credentials for session
+        credentials: 'include',
         body: JSON.stringify(settings),
       });
 
@@ -128,7 +124,7 @@ export default function SettingsPage() {
       }
 
       toast.success('Settings updated successfully');
-      await fetchSettings(); // Refresh settings
+      await fetchSettings();
     } catch (err) {
       toast.error('Failed to update settings');
       console.error('Error updating settings:', err);
@@ -137,7 +133,6 @@ export default function SettingsPage() {
     }
   };
 
-  // Show loading state while checking authentication
   if (status === 'loading') {
     return (
       <div className="p-6">
@@ -146,7 +141,6 @@ export default function SettingsPage() {
     );
   }
 
-  // Show loading state while fetching settings
   if (loading) {
     return (
       <div className="p-6">
@@ -155,7 +149,6 @@ export default function SettingsPage() {
     );
   }
 
-  // Show error state
   if (error || !settings) {
     return (
       <div className="p-6">
@@ -181,7 +174,6 @@ export default function SettingsPage() {
         </Button>
       </div>
 
-      {/* System Statistics */}
       <Card className="p-6">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Settings className="w-5 h-5" />
@@ -212,7 +204,6 @@ export default function SettingsPage() {
         </div>
       </Card>
 
-      {/* General Settings */}
       <Card className="p-6">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Settings className="w-5 h-5" />
@@ -273,4 +264,4 @@ export default function SettingsPage() {
       </div>
     </div>
   );
-} 
+}

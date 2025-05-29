@@ -5,7 +5,6 @@ import { Menu, Transition } from '@headlessui/react';
 import { User } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import { Bell, User as UserIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   user: User;
@@ -51,7 +50,7 @@ export function Header({ user }: HeaderProps) {
             >
               <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <Menu.Item>
-                  {({ active }) => (
+                  {() => (
                     <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-200">
                       <p className="font-medium">{user.name}</p>
                       <p className="text-gray-500">{user.email}</p>
@@ -59,13 +58,10 @@ export function Header({ user }: HeaderProps) {
                   )}
                 </Menu.Item>
                 <Menu.Item>
-                  {({ active }) => (
+                  {() => (
                     <button
                       onClick={() => signOut()}
-                      className={cn(
-                        active ? 'bg-gray-100' : '',
-                        'block w-full px-4 py-2 text-left text-sm text-gray-700'
-                      )}
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Sign out
                     </button>

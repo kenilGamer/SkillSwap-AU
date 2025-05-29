@@ -25,6 +25,7 @@ export default function AddSkillTab({ selectedSkills, setSelectedSkills, skillSe
 
     function addSkill(name: string) {
         if (selectedSkills.includes(name)) removeSkill(name)
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         else setSelectedSkills((prev) => [...prev, name])
     }
 

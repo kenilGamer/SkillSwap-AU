@@ -6,7 +6,6 @@ import User from '@/models/user.model';
 import VerificationToken from '@/models/verification.model';
 import Settings from '@/models/settings.model';
 import { sendVerificationEmail } from '@/lib/email';
-import crypto from 'crypto';
 
 export async function POST() {
   try {

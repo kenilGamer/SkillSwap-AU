@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Check, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { io, Socket } from 'socket.io-client'
+import { io } from 'socket.io-client'
 
 // Initialize Socket.IO client
 const socket = io("http://localhost:4000");

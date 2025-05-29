@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/shadcn/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/shadcn/ui/dialog';
-import { useSnapshot } from 'valtio';
-import userStore from '@/store/user.store';
 
 // Mock data for mentors
 const mentors = [
@@ -53,12 +51,10 @@ const myMentorships = [
 ];
 
 export default function MentorshipPage() {
-  const snap = useSnapshot(userStore);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [requestLoading, setRequestLoading] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState('');
   const [message, setMessage] = useState('');
-  const [selectedMentor, setSelectedMentor] = useState<any>(null);
 
   // Placeholder: handle mentorship request
   const handleRequest = async () => {
@@ -147,7 +143,7 @@ export default function MentorshipPage() {
                   ))}
                 </div>
                 <div className="text-sm text-slate-600 mb-3">{mentor.bio}</div>
-                <Button size="sm" className="rounded-full px-4" onClick={() => { setSelectedMentor(mentor); setIsDialogOpen(true); }}>
+                <Button size="sm" className="rounded-full px-4" onClick={() => { setIsDialogOpen(true); }}>
                   Request Mentorship
                 </Button>
               </div>

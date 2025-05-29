@@ -2,7 +2,6 @@
 
 import { Input } from '@/components/shadcn/ui/input'
 import { useState } from 'react'
-import { FaRegBell } from 'react-icons/fa'
 import { MdSearch } from 'react-icons/md'
 import ChatCard from './ChatCard'
 import ChatPanel from './ChatPanel'
@@ -10,7 +9,7 @@ import { useSnapshot } from 'valtio'
 import chatStore from '@/store/chat.store'
 import NotificationBell from './NotificationBell'
 
-export default function Chat({ messages }: { messages: any }) {
+export default function Chat() {
   const [showUnsavedChats, setShowUnsavedChats] = useState(false)
   const { chats } = useSnapshot(chatStore) as typeof chatStore
 

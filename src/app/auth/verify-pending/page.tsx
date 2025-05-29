@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Mail, RefreshCw } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { sendVerificationEmail } from '@/lib/email';
 
 export default function VerifyPendingPage() {
   const router = useRouter();

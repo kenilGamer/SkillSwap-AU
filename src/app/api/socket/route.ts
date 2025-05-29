@@ -1,11 +1,10 @@
 import { Server as NetServer } from 'http';
-import { NextApiRequest } from 'next';
 import { Server as ServerIO } from 'socket.io';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextApiRequest) {
+export async function GET() {
   try {
     if (!(global as any).io) {
       console.log('New Socket.io server...');

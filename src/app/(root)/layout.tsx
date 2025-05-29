@@ -3,7 +3,6 @@ import Navbar from '@/components/root/Navbar'
 import { redirect } from 'next/navigation'
 import SetUser from '@/components/root/setUser'
 import formatUser from '@/helpers/formatUser'
-import Link from 'next/link'
 
 export default async function layout({ children }: { children: React.ReactNode }) {
     const res = await auth.getCurrentUser()

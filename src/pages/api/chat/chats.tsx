@@ -2,7 +2,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '@/helpers/dbconnect'; // Connects to your database
 import Chat from '@/models/Chat.model'; // Your Chat model
-import Message from '@/models/Message.model'; // Import the Message model
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();

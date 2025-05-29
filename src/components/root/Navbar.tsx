@@ -325,7 +325,7 @@ export default function Navbar() {
                                             )}
                                             {!isLoading && results.users.length === 0 && results.posts.length === 0 && (
                                                 <div className="py-6 text-center text-sm text-gray-500">
-                                                    No results found for "{searchQuery}"
+                                                    No results found for &quot;{searchQuery}&quot;
                                                 </div>
                                             )}
                                         </>

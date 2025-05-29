@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   await dbConnect();
   const resources = await Resource.find().populate('owner', 'name image');
   return NextResponse.json(resources);

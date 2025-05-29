@@ -2,11 +2,9 @@ import { Button } from '@/components/Button'
 import NewPostForm from '../../components/root/NewPostForm'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader, DialogDescription } from '@/components/shadcn/ui/dialog'
 import getPosts from '@/actions/data/getPosts'
-import { Skeleton } from '@/components/shadcn/ui/skeleton'
 import auth from '@/auth/auth'
 import SearchablePosts from '@/components/SearchablePosts'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import { PlusIcon, RocketIcon } from '@radix-ui/react-icons'
 
 export default async function Page() {

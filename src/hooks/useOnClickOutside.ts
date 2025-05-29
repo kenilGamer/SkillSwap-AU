@@ -2,6 +2,7 @@ import { RefObject, useEffect } from 'react'
 
 export function useOnClickOutside<T extends HTMLElement>(
     ref: RefObject<T | null>,
+    // eslint-disable-next-line no-unused-vars
     handler: (event: MouseEvent | TouchEvent) => void
 ) {
     useEffect(() => {

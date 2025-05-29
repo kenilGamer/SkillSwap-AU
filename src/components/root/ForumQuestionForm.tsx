@@ -6,28 +6,38 @@ import { Label } from '@/components/shadcn/ui/label';
 import { Button } from '@/components/Button';
 
 interface ForumQuestionFormProps {
+  // eslint-disable-next-line no-unused-vars
   onSubmit: (title: string, description: string) => void;
   loading?: boolean;
 }
 
 export default function ForumQuestionForm({ onSubmit, loading }: ForumQuestionFormProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [formData, setFormData] = useState({
+    title: '',
+    description: ''
+  });
   const [error, setError] = useState<{ title?: string; description?: string }>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id === 'forum-title' ? 'title' : 'description']: value
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim()) {
+    if (!formData.title.trim() || !formData.description.trim()) {
       setError({
-        title: !title.trim() ? 'Title required' : undefined,
-        description: !description.trim() ? 'Description required' : undefined,
+        title: !formData.title.trim() ? 'Title required' : undefined,
+        description: !formData.description.trim() ? 'Description required' : undefined,
       });
       return;
     }
     setError({});
-    onSubmit(title, description);
-    setTitle('');
-    setDescription('');
+    onSubmit(formData.title, formData.description);
+    setFormData({ title: '', description: '' });
   };
 
   return (
@@ -37,8 +47,8 @@ export default function ForumQuestionForm({ onSubmit, loading }: ForumQuestionFo
         <Input
           id="forum-title"
           placeholder="Question Title..."
-          value={title}
-          onChange={e => setTitle(e.target.value)}
+          value={formData.title}
+          onChange={handleChange}
           className="mt-1"
         />
         {error.title && <div className="text-xs text-red-500 mt-1">{error.title}</div>}
@@ -48,8 +58,8 @@ export default function ForumQuestionForm({ onSubmit, loading }: ForumQuestionFo
         <Textarea
           id="forum-description"
           placeholder="Question Details..."
-          value={description}
-          onChange={e => setDescription(e.target.value)}
+          value={formData.description}
+          onChange={handleChange}
           className="mt-1"
           rows={3}
         />
@@ -60,4 +70,4 @@ export default function ForumQuestionForm({ onSubmit, loading }: ForumQuestionFo
       </Button>
     </form>
   );
-} 
+}

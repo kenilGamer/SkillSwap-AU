@@ -25,7 +25,7 @@ interface Report {
 }
 
 export default function ModerationPage() {
-  const [reports, setReports] = useState<Report[]>([]);
+  const [reports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -10,6 +10,12 @@ const publicPaths = [
   '/api/auth/resend-verification',
   '/auth/verify-success',
   '/auth/verify-pending',
+  '/api/auth/session',
+  '/api/auth/csrf',
+  '/api/auth/signin',
+  '/api/auth/signout',
+  '/api/auth/callback',
+  '/api/auth/providers',
 ];
 
 export default async function middleware(request: NextRequestWithAuth) {
@@ -44,7 +50,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - api/auth/* (NextAuth API routes)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public/|api/auth/).*)',
   ],
 };

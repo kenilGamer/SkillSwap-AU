@@ -21,7 +21,7 @@ export default function Profile({ user, currentUserId }: { user: IUser; currentU
         };
     
         if (user?._id) fetchFollowers();
-    }, [user?._id]);
+    }, [user?._id, currentUserId]); // Added currentUserId to dependency array
     
     const handleFollow = async () => {
         setLoading(true)
@@ -38,7 +38,7 @@ export default function Profile({ user, currentUserId }: { user: IUser; currentU
     return (
         <div className="flex w-full flex-col items-center bg-gradient-to-b from-indigo-50 to-white min-h-screen py-8 px-2">
             {/* Banner/Cover */}
-            <div className="w-full max-w-2xl h-32 rounded-2xl bg-gradient-to-r from-indigo-400 to-indigo-600 mb-[-67px] shadow-lg relative flex items-end justify-center   ">
+            <div className="w-full max-w-2xl h-32 rounded-2xl bg-gradient-to-r from-indigo-400 to-indigo-600 mb-[-67px] shadow-lg relative flex items-end justify-center">
                 <div className="absolute inset-0 bg-black/10 pointer-events-none" />
                 {/* Avatar */}
                 <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 group">
@@ -72,7 +72,7 @@ export default function Profile({ user, currentUserId }: { user: IUser; currentU
                             {user.country && user.country !== 'unset' && <span>{user.country}</span>}
                             {user.email && user.email !== 'unset' && <span>{user.email}</span>}
                             {user.website && user.website !== 'unset' ? (
-                                <a target="_blank" className="text-blue-600 underline hover:text-blue-800 transition" href={user.website}>{user.website}</a>
+                                <a target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800 transition" href={user.website}>{user.website}</a>
                             ) : null}
                         </div>
                         <button

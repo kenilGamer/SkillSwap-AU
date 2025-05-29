@@ -12,38 +12,11 @@ import userStore from '@/store/user.store';
 import { useSnapshot } from 'valtio';
 
 import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { MdDelete, MdOutlineReport } from 'react-icons/md';
 
-
 export default function ChatCard({ data }: { data: any }) {
-  const searchParams = useSearchParams();
-  const [chats, setChats] = useState();
-  const sender = searchParams?.get('sender');
   const { user } = useSnapshot(userStore);
-
-
-
-useEffect(() => {
-  const fetchChats = async () => {
-    try {
-      const response = await axios.get(`/api/users/users`, {
-        params: { sender },
-      });
-
-      if (Array.isArray(response.data.data)) {
-        setChats(response.data.data);
-      } 
-    } catch (error) {
-      console.error('error', error);
-    }
-  };
-
-  fetchChats();
-}, [sender]); // ✅ Added 'sender' to dependencies
-
 
   // Determine the chat user's name from the passed data prop.
   const chatUser = data?.username || 'Unknown User';
@@ -82,7 +55,6 @@ useEffect(() => {
       console.error('Failed to open chat:', err);
     }
   };
-
 
   return (
     <div

@@ -1,19 +1,17 @@
-import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-interface User {
-  _id: string;
-  id: string;
-  email: string;
-  name: string;
-  username: string;
-  role: string;
-}
+import GoogleProvider from "next-auth/providers/google";
+import { NextAuthOptions } from "next-auth";
+import argon2 from "argon2";
+// eslint-disable-next-line no-unused-vars
+import UserModel, { UserRoleType as _UserRoleType, UserRole } from "@/models/user.model";
+import dbConnect from "@/helpers/dbconnect";
+import { User } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      id: "credentials",
+      name: "Credentials", 
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
@@ -23,44 +21,80 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        try {
-          // Here you would typically validate against your database
-          // For now, we'll just return a mock user
-          const user: User = {
-            _id: "1",
-            id: "1",
-            email: credentials.email,
-            name: "Test User",
-            username: "testuser",
-            role: "user"
-          };
-          return user;
-        } catch (error) {
-          console.error("Auth error:", error);
+        await dbConnect();
+        
+        const user = await UserModel.findOne({ 
+          email: credentials.email.toLowerCase() 
+        }).select('+password');
+
+        if (!user || !user.password) {
           return null;
+        }
+
+        const isValid = await argon2.verify(user.password, credentials.password);
+
+        if (!isValid) {
+          return null;
+        }
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          role: user.role || UserRole.USER,
+          username: user.username
+        } as User;
+      }
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
         }
       }
     })
   ],
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/login",
-  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        return {
+          ...token,
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          username: user.username
+        };
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        
-        session.user.id = token.id as string;
-      }
-      return session;
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          email: token.email,
+          name: token.name,
+          role: token.role,
+          username: token.username
+        }
+      };
     }
-  }
+  },
+  pages: {
+    signIn: "/login",
+    error: "/login"
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: true
 }; 

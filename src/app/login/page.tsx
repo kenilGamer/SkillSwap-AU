@@ -15,8 +15,10 @@ import { FaUser, FaGithub } from 'react-icons/fa'
 import { FcGoogle } from "react-icons/fc";
 import { FaDiscord } from "react-icons/fa";
 import { signIn } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
+    const router = useRouter();
     const form = useForm<z.infer<typeof userLoginValidation>>({
         resolver: zodResolver(userLoginValidation),
         defaultValues: {
@@ -27,21 +29,38 @@ export default function Page() {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
-    async function onSubmit(values: any) {
-        setError('')
-        setLoading(true)
-        const res = await signIn("credentials", {
-            redirect: false,
-            email: values.email,
-            password: values.password,
-        });
-        if (res?.error) {
-            setError(res.error)
+    async function onSubmit(values: z.infer<typeof userLoginValidation>) {
+        try {
+            setError('')
+            setLoading(true)
+            
+            const result = await signIn("credentials", {
+                redirect: false,
+                email: values.email.toLowerCase(),
+                password: values.password,
+            });
+
+            if (!result) {
+                setError('An unexpected error occurred')
+                return
+            }
+
+            if (result.error) {
+                console.error('Login error:', result.error)
+                setError('Invalid email or password')
+                return
+            }
+
+            if (result.ok) {
+                router.push('/')
+                router.refresh()
+            }
+        } catch (err) {
+            console.error('Login error:', err)
+            setError('An error occurred during login')
+        } finally {
             setLoading(false)
-            return
         }
-        setError('')
-        window.location.href = '/'
     }
 
     return (
@@ -128,8 +147,9 @@ export default function Page() {
                             <Button
                                 loading={loading}
                                 className="w-full space-y-1"
+                                type="submit"
                             >
-                                Sign-Up
+                                Login
                             </Button>
                             <div className="flex gap-3 items-center">
                                <button 
@@ -139,15 +159,15 @@ export default function Page() {
                                >
                                 <FcGoogle className="h-8 w-8" title="Sign in with Google" />
                                </button>
-                                <button>
+                                <button type="button">
                                 <FaDiscord className="h-8 w-8 text-[#5865F2]" title="Sign in with Discord" />
                                 </button>
-                                <button>
+                                <button type="button">
                                 <FaGithub className="h-8 w-8 text-black" title="Sign in with GitHub" />
                                 </button>
                             </div>
                             <div className="text-sm">
-                                Not a mebmer?{' '}
+                                Not a member?{' '}
                                 <Link
                                     href="/signup"
                                     className="text-blue-600"

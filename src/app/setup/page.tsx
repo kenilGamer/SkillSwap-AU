@@ -12,7 +12,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { updateProfile } from '@/actions/user/data/updateProfile'
 import { userValidation } from '@/lib/validations/user'
-import { IUser } from '@/models/user.model'
+import { IUser, IUserClient } from '@/models/user.model'
 import userStore from '@/store/user.store'
 
 export default function SetupPage() {
@@ -60,7 +60,7 @@ export default function SetupPage() {
             const res = await updateProfile(validate.data)
             if (res.success) {
                 toast.success('Profile setup complete!')
-                userStore.user = res.user as IUser
+                userStore.user = res.user as IUserClient
                 router.push('/')
             } else {
                 toast.error(res.error || 'Failed to update profile')

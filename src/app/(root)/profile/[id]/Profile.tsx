@@ -3,11 +3,11 @@
 import { Badge } from '@/components/shadcn/ui/badge'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { IUser } from '@/models/user.model'
+import { IUserClient } from '@/models/user.model'
 import { FaUserEdit, FaUserTag, FaInfoCircle } from 'react-icons/fa'
 import { FiCamera } from 'react-icons/fi'
 
-export default function Profile({ user, currentUserId }: { user: IUser; currentUserId: string }) {
+export default function Profile({ user, currentUserId }: { user: IUserClient; currentUserId: string }) {
     const [isFollowing, setIsFollowing] = useState(user?.followers?.includes(currentUserId) ?? false)
     const [loading, setLoading] = useState(false)
     

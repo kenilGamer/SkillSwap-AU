@@ -30,6 +30,26 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
+export interface IUserClient {
+  _id: string;
+  name: string;
+  username: string;
+  email: string;
+  skills: string[];
+  password?: string;
+  bio: string;
+  country: string;
+  plan?: string;
+  website: string;
+  verified: boolean;
+  image: string;
+  followers: string[];
+  following: string[];
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Define schema options separately for better readability
 const schemaOptions = {
   timestamps: true,

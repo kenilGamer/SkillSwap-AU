@@ -2,6 +2,7 @@ import { proxy } from 'valtio';
 import { devtools } from 'valtio/utils';
 
 interface Chat {
+    _id: string;
     id: string;
     participants: string[];
     lastMessage?: {

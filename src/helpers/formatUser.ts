@@ -1,10 +1,10 @@
-import { IUser } from '@/models/user.model'
+import { IUserClient } from '@/models/user.model'
 
 function safeString(val: unknown): string {
   return typeof val === 'string' ? val : '';
 }
 
-export default function formatUser(user: Partial<IUser> | undefined): Partial<IUser> {
+export default function formatUser(user: Partial<IUserClient> | undefined): IUserClient {
     return {
         _id: safeString(user?._id),
         name: safeString(user?.name),
@@ -22,6 +22,7 @@ export default function formatUser(user: Partial<IUser> | undefined): Partial<IU
         role: user?.role || 'user',
         plan: user?.plan || '',
         createdAt: user?.createdAt || new Date(),
-        updatedAt: user?.updatedAt || new Date()
+        updatedAt: user?.updatedAt || new Date(),
+        // Add any other required fields with defaults if needed
     };
 }

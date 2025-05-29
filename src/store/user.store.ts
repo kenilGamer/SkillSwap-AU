@@ -1,18 +1,18 @@
 import getUser from '@/actions/user/data/getUser'
-import { IUser } from '@/models/user.model'
+import { IUserClient } from '@/models/user.model'
 import { proxy } from 'valtio'
 
 const userStore = proxy({
-    user: {} as IUser,
+    user: {} as IUserClient,
 
-    async setUser(data?: IUser) {
+    async setUser(data?: IUserClient) {
         if (data) {
             this.user = data
             return
         }
         const { error, user } = await getUser()
         if (error) return { error }
-        this.user = user as any
+        this.user = user as IUserClient
     },
 })
 

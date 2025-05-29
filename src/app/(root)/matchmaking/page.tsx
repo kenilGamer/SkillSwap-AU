@@ -28,7 +28,7 @@ export default function Page() {
         setIsLoading(true)
         const dummyUsers = getDummyUsers()
         const interval = setInterval(() => {
-            setMatchedUser(pickRandom(dummyUsers))
+            setMatchedUser(pickRandom(dummyUsers) as { name: string; imageLink: string; chatLink: boolean; skills: string[]; } | null)
         }, 200)
 
         const res = await getMatchedUser(selectedSkills)

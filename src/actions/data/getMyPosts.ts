@@ -1,6 +1,6 @@
 import auth from '@/auth/auth'
 import Post from '@/models/Post.model'
-import { IUser } from '@/models/user.model'
+import { IUserClient } from '@/models/user.model'
 
 export default async function getMyPosts() {
     const res = await auth.getCurrentUser()
@@ -8,7 +8,7 @@ export default async function getMyPosts() {
     try {
         const posts = await Post.find({ owner: res.user._id })
             .limit(10)
-            .populate<{ owner: IUser }>('owner', 'username image name _id followers following')
+            .populate<{ owner: IUserClient }>('owner', 'username image name _id followers following')
             .lean()
 
         // Transform and serialize the data

@@ -12,7 +12,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { updateProfile } from '@/actions/user/data/updateProfile'
 import { userValidation } from '@/lib/validations/user'
-import { IUser, IUserClient } from '@/models/user.model'
+import { IUserClient } from '@/models/user.model'
 import userStore from '@/store/user.store'
 
 export default function SetupPage() {

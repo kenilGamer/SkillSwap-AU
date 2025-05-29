@@ -4,7 +4,7 @@ import { DialogClose } from '@/components/shadcn/ui/dialog'
 import { Input } from '@/components/shadcn/ui/input'
 import { Label } from '@/components/shadcn/ui/label'
 import { Textarea } from '@/components/shadcn/ui/textarea'
-import { IUser } from '@/models/user.model'
+import { IUserClient } from '@/models/user.model'
 import { useState, useRef } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/ui/select'
 import countries from '@/constants/countries'
@@ -13,8 +13,10 @@ import { updateProfile } from '@/actions/user/data/updateProfile'
 import callPromiseWithToast from '@/helpers/callPromiseWithToast'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/shadcn/ui/dialog'
 import userStore from '@/store/user.store'
+import { toast } from 'react-hot-toast'
+import formatUser from '@/helpers/formatUser'
 
-export default function EditProfile({ user }: { user: IUser }) {
+export default function EditProfile({ user }: { user: IUserClient }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [selectedSkills, setSelectedSkills] = useState<string[]>(user.skills as string[])
@@ -39,8 +41,6 @@ export default function EditProfile({ user }: { user: IUser }) {
         setLoading(true)
         let imageUrl = image
         if (imageFile) {
-            // Upload imageFile to server, get URL
-            // Replace this with your actual upload logic
             const formData = new FormData()
             formData.append('avatar', imageFile)
             const res = await fetch('/api/upload/upload', {
@@ -48,12 +48,15 @@ export default function EditProfile({ user }: { user: IUser }) {
                 body: formData,
             })
             const data = await res.json()
-            imageUrl = data.filePath
+            if (data.filePath) {
+                imageUrl = data.filePath
+            }
         }
-        const res = await callPromiseWithToast(updateProfile({ ...validate.data, image: imageUrl }))
-        if (res.success) {
+        const res = await updateProfile({ ...validate.data, image: imageUrl })
+        if (res.success && res.user) {
             setIsDialogOpen(false)
-            userStore.setUser(res.user)
+            userStore.setUser(formatUser(res.user))
+            toast.success('Profile updated successfully')
         }
         setLoading(false)
     }

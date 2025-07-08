@@ -64,9 +64,9 @@ export const authOptions: NextAuthOptions = {
       await dbConnect();
 
       // Always try to find the user in the DB by email
-      let email = token.email || user?.email || profile?.email;
+      const email = token.email || user?.email || profile?.email;
       if (email) {
-        let dbUser = await UserModel.findOne({ email });
+        const dbUser = await UserModel.findOne({ email });
         if (dbUser) {
           token.id = dbUser._id.toString();
           token.role = dbUser.role;

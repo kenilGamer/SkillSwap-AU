@@ -19,6 +19,6 @@ export default async function postRequirement(data: z.infer<typeof postValidatio
     await Post.create({ ...value.data, owner: (res.user as any)._id })
     return { success: 'Requirement has been posted' }
   } catch (error) {
-    return { message: 'Something went wrong', error: error }
+    return { message: 'Something went wrong', error: error instanceof Error ? error.message : String(error) };
   }
 }

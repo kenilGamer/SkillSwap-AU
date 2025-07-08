@@ -34,7 +34,7 @@ const settingsSchema = new Schema<ISettings>({
 
 // Ensure only one settings document exists
 settingsSchema.pre('save', async function(next) {
-  const count = await this.constructor.countDocuments();
+  const count = await (this.constructor as typeof Settings).countDocuments();
   if (count > 0 && this.isNew) {
     throw new Error('Only one settings document can exist');
   }

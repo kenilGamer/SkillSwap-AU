@@ -84,7 +84,7 @@ feedbackSchema.virtual('responseTime').get(function() {
 // Pre-save middleware
 feedbackSchema.pre('save', function(next) {
   this.updatedAt = new Date();
-  if (this.isModified('adminResponse')) {
+  if (this.isModified('adminResponse') && this.adminResponse) {
     this.adminResponse.respondedAt = new Date();
   }
   next();

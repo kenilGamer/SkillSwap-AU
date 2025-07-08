@@ -93,7 +93,7 @@ class Auth {
     async getCurrentUser() {
         const session = await this.getCurrentSession();
         if (!session?.user) return { error: 'Not authenticated' };
-        return { user: session.user };
+        return { user: { ...session.user, id: (session.user as any).id || (session.user as any)._id } };
     }
 }
 

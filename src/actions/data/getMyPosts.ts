@@ -30,7 +30,7 @@ export default async function getMyPosts() {
                 followingCount: Array.isArray(post.owner?.following) ? post.owner.following.length : 0
             }
         })).reverse()
-
+        
         return { posts: transformedPosts }
     } catch (error) {
         console.log(error)

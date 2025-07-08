@@ -60,21 +60,62 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        return {
-          ...token,
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          username: user.username,
-          verified: user.verified || false
-        };
+    async jwt({ token, user, account, profile }) {
+      await dbConnect();
+
+      // Always try to find the user in the DB by email
+      let email = token.email || user?.email || profile?.email;
+      if (email) {
+        let dbUser = await UserModel.findOne({ email });
+        if (dbUser) {
+          token.id = dbUser._id.toString();
+          token.role = dbUser.role;
+          token.username = dbUser.username;
+          token.verified = dbUser.verified;
+          token.email = dbUser.email;
+        }
       }
+
+      // If this is a Google login and we have a profile, create the user if not found
+      if (account?.provider === "google" && profile) {
+        let dbUser = await UserModel.findOne({ email: profile.email });
+        if (!dbUser) {
+          if (!profile.email) throw new Error("Google profile did not return an email");
+          dbUser = await UserModel.create({
+            email: profile.email,
+            name: profile.name,
+            image: profile.image || '',
+            provider: "google",
+            providerId: profile.sub,
+            role: UserRole.USER,
+            username: profile.email ? profile.email.split("@")[0] : "googleuser",
+            verified: true,
+            skills: [],
+            bio: '',
+            country: '',
+            website: '',
+            followers: [],
+            following: [],
+          });
+          token.id = dbUser._id.toString();
+          token.role = dbUser.role;
+          token.username = dbUser.username;
+          token.verified = dbUser.verified;
+          token.email = dbUser.email;
+        }
+      } else if (user) {
+        token.id = user.id || user._id;
+        token.role = user.role;
+        token.username = user.username;
+        token.verified = user.verified;
+        token.email = user.email;
+      }
+
+      console.log('JWT CALLBACK:', { tokenId: token.id });
       return token;
     },
     async session({ session, token }) {
+      console.log('SESSION CALLBACK:', { sessionUserId: token.id });
       return {
         ...session,
         user: {

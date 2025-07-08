@@ -68,24 +68,30 @@ export function NotificationToast() {
         };
     }, [session, notifications]);
 
-    // Fetch initial notifications
-    useEffect(() => {
-        if (!session?.user) return
-
-        const fetchNotifications = async () => {
-            try {
-                const response = await fetch('/api/notifications')
-                const data = await response.json()
-                if (data.notifications) {
-                    setNotifications(data.notifications)
-                }
-            } catch (error) {
-                console.error('Failed to fetch notifications:', error)
+    const fetchNotifications = async () => {
+        if (!session?.user) return;
+        try {
+            const response = await fetch('/api/notifications');
+            const data = await response.json();
+            if (data.notifications) {
+                setNotifications(data.notifications);
             }
+        } catch (error) {
+            console.error('Failed to fetch notifications:', error);
         }
+    };
 
-        fetchNotifications()
-    }, [session])
+    // Fetch once on mount/session change
+    useEffect(() => {
+        fetchNotifications();
+    }, [session]);
+
+    // Poll every 10 seconds
+    useEffect(() => {
+        if (!session?.user) return;
+        const interval = setInterval(fetchNotifications, 10000);
+        return () => clearInterval(interval);
+    }, [session]);
 
     const markAsRead = async (id: string) => {
         try {

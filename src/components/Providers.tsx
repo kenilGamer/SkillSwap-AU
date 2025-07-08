@@ -18,7 +18,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                     <main className="min-h-screen">
                         {children}
                     </main>
-                    <NotificationToast />
+                    {/* <NotificationToast /> */}
                 </LoaderProvider>
             </ReduxProvider>
         </SessionProvider>

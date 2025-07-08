@@ -5,12 +5,12 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-
+public/uploads
 # testing
 /coverage
 
 #uploads
-uploads/
+*uploads/
 # next.js
 /.next/
 /out/
@@ -36,3 +36,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/uploads/431891246d8a9f18a08b4b100
+

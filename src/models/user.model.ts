@@ -78,7 +78,6 @@ const userSchema = new Schema<IUser>(
       type: String, 
       required: [true, 'Email is required'],
       trim: true, 
-      unique: true,
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
     },

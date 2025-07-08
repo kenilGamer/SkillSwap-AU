@@ -111,11 +111,9 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
       }
 
-      console.log('JWT CALLBACK:', { tokenId: token.id });
       return token;
     },
     async session({ session, token }) {
-      console.log('SESSION CALLBACK:', { sessionUserId: token.id });
       return {
         ...session,
         user: {

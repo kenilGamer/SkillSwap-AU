@@ -5,7 +5,7 @@ import ProgressBar from '@/components/ProgressBar'
 import { Toaster } from '@/components/shadcn/ui/sonner'
 import { LoaderProvider, LoaderOverlay } from '@/components/GlobalLoader'
 import ReduxProvider from '@/components/ReduxProvider'
-import { NotificationToast } from '@/components/NotificationToast'
+// import { NotificationToast } from '@/components/NotificationToast'
 import Providers from '@/components/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -32,7 +32,6 @@ export default async function RootLayout({
                             {children}
                         </LoaderProvider>
                     </ReduxProvider>
-                    <NotificationToast />
                 </Providers>
             </body>
         </html>

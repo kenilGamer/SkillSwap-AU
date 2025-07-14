@@ -27,7 +27,7 @@ export default async function Page() {
       }
       console.log(`Redirecting to login from page: ${error}`)
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     if (
       typeof err?.message === 'string' &&
       err.message.includes('MongooseError: Operation `posts.find()` buffering timed out')

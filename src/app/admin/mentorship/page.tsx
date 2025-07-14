@@ -46,8 +46,8 @@ export default function MentorshipManagement() {
     const [loading, setLoading] = useState(true);
     const [selectedMentor, setSelectedMentor] = useState('');
     const [selectedMentee, setSelectedMentee] = useState('');
-    const [availableMentors, setAvailableMentors] = useState<any[]>([]);
-    const [availableMentees, setAvailableMentees] = useState<any[]>([]);
+    const [availableMentors, setAvailableMentors] = useState<IUserClient[]>([]);
+    const [availableMentees, setAvailableMentees] = useState<IUserClient[]>([]);
 
     useEffect(() => {
         if (session?.user?.role !== 'admin') {

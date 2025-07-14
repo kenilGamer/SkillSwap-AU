@@ -46,7 +46,7 @@ export default function Navbar() {
     const [showSearch, setShowSearch] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [results, setResults] = useState<{ users: SearchResult[], posts: SearchResult[] }>({ users: [], posts: [] })
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
     const searchRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const debouncedQuery = useDebounce(searchQuery, 300)
@@ -61,6 +61,8 @@ export default function Navbar() {
         { path: '/mentorship', name: 'Mentorship', icon: <CgUserlane /> },
     ]
 
+    const [isSearching, setIsSearching] = useState(false)
+
     // Fetch search results
     useEffect(() => {
         const fetchResults = async () => {
@@ -69,7 +71,7 @@ export default function Navbar() {
                 return
             }
 
-            setIsLoading(true)
+            setIsSearching(true)
             try {
                 const res = await fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}`)
                 const data = await res.json()
@@ -77,7 +79,7 @@ export default function Navbar() {
             } catch (error) {
                 console.error('Search error:', error)
             } finally {
-                setIsLoading(false)
+                setIsSearching(false)
             }
         }
 
@@ -116,17 +118,20 @@ export default function Navbar() {
     return (
         <TooltipProvider>
             <nav aria-label="Main navigation" className="relative flex h-screen w-16 flex-shrink-0 flex-col items-center justify-between bg-gradient-to-b from-indigo-50 to-indigo-100 p-3 shadow-lg">
-                <Link href="/" className="relative aspect-square w-12 mb-2 group" aria-label="Home">
-                    <motion.div whileHover={{ scale: 1, boxShadow: '0 4px 6px #6366f1' }} transition={{ type: 'spring', stiffness: 300 }}>
-                        <Image
-                            src="/logo.png"
-                            alt="SkillSwap"
-                            fill
-                            sizes="(max-width: 768px) 120px, 200px"
-                            className="rounded-xl"
-                        />
-                    </motion.div>
-                </Link>
+                <div className="relative w-12 h-12 mb-2">
+                    <Link href="/" className="group" aria-label="Home">
+                        <motion.div whileHover={{ scale: 1, boxShadow: '0 4px 6px #6366f1' }} transition={{ type: 'spring', stiffness: 300 }}>
+                            <Image
+                                src="/logo.png"
+                                alt="SkillSwap"
+                                fill
+                                priority
+                                sizes="(max-width: 768px) 120px, 200px"
+                                className="rounded-xl"
+                            />
+                        </motion.div>
+                    </Link>
+                </div>
 
                 <div className="flex flex-col items-center justify-center gap-6 flex-1">
                     {links.map((e, i) => (
@@ -186,16 +191,19 @@ export default function Navbar() {
                         <TooltipTrigger asChild>
                             <motion.button
                                 whileTap={{ scale: 0.92 }}
+                                disabled={isLoggingOut}
                                 onClick={async () => {
                                     if (window.confirm('Are you sure you want to logout?')) {
+                                        setIsLoggingOut(true)
                                         await Logout();
                                         window.location.href = '/login';
+                                        setIsLoggingOut(false)
                                     }
                                 }}
                                 aria-label="Logout"
                                 className="flex items-center justify-center rounded-full p-2 bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-700 shadow transition-all focus:outline-none focus:ring-2 focus:ring-red-400"
                             >
-                                <MdOutlineLogout size="26px" className="rotate-180" />
+                                <MdOutlineLogout size="26px" className={`rotate-180 ${isLoggingOut ? 'animate-spin' : ''}`} />
                             </motion.button>
                         </TooltipTrigger>
                         <TooltipContent side="right">Logout</TooltipContent>
@@ -235,7 +243,7 @@ export default function Navbar() {
                                     )}
                                 </div>
                                 <div className="max-h-[400px] overflow-y-auto p-2">
-                                    {isLoading ? (
+                                    {isSearching ? (
                                         <div className="space-y-2">
                                             {[...Array(3)].map((_, i) => (
                                                 <div key={i} className="flex items-center gap-3 p-2">
@@ -323,7 +331,7 @@ export default function Navbar() {
                                                     </div>
                                                 </div>
                                             )}
-                                            {!isLoading && results.users.length === 0 && results.posts.length === 0 && (
+                                            {!isSearching && results.users.length === 0 && results.posts.length === 0 && (
                                                 <div className="py-6 text-center text-sm text-gray-500">
                                                     No results found for &quot;{searchQuery}&quot;
                                                 </div>

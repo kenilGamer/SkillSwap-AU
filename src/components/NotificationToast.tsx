@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Check, X } from 'lucide-react'
@@ -66,9 +66,9 @@ export function NotificationToast() {
             socket.off('connect_error');
             socket.off('notification');
         };
-    }, [session, notifications]);
+    }, [session]);
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         if (!session?.user) return;
         try {
             const response = await fetch('/api/notifications');
@@ -79,19 +79,19 @@ export function NotificationToast() {
         } catch (error) {
             console.error('Failed to fetch notifications:', error);
         }
-    };
+    }, [session]);
 
     // Fetch once on mount/session change
     useEffect(() => {
         fetchNotifications();
-    }, [session]);
+    }, [session, fetchNotifications]);
 
     // Poll every 10 seconds
     useEffect(() => {
         if (!session?.user) return;
         const interval = setInterval(fetchNotifications, 10000);
         return () => clearInterval(interval);
-    }, [session]);
+    }, [session, fetchNotifications]);
 
     const markAsRead = async (id: string) => {
         try {

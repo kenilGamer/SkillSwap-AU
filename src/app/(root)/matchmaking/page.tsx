@@ -18,14 +18,14 @@ export default function Page() {
     const { user } = useSnapshot(userStore)
     const [requestMatchClicked, setRequestMatchClicked] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isFinding, setIsFinding] = useState(false)
     const [matchedSkills, setMatchedSkills] = useState(null as unknown as string[])
     const [matchedUser, setMatchedUser] = useState(null as null | ReturnType<typeof getDummyUsers>[0])
     const [selectedSkills, setSelectedSkills] = useState<string[]>([])
     const [setSkillSearchInput, setSetSkillSearchInput] = useState('')
 
     async function handleFindBuddy() {
-        setIsLoading(true)
+        setIsFinding(true)
         const dummyUsers = getDummyUsers()
         const interval = setInterval(() => {
             setMatchedUser(pickRandom(dummyUsers) as { name: string; imageLink: string; chatLink: boolean; skills: string[]; } | null)
@@ -39,7 +39,7 @@ export default function Page() {
         setMatchedUser(res.user)
         setMatchedSkills(res.user?.skills)
         setRequestMatchClicked(true)
-        setIsLoading(false)
+        setIsFinding(false)
     }
 
     return (
@@ -98,7 +98,7 @@ export default function Page() {
                 <div className="flex w-full flex-col items-center gap-3">
                     {requestMatchClicked && (
                         <Button
-                            loading={isLoading}
+                            loading={isFinding}
                             variant="outline"
                             className="w-full max-w-52 border-2 border-slate-600"
                         >
@@ -111,7 +111,7 @@ export default function Page() {
                     >
                         <DialogTrigger asChild>
                             <Button
-                                loading={isLoading}
+                                loading={isFinding}
                                 className="w-full max-w-52"
                                 onClick={() => {
                                     if (requestMatchClicked) {
@@ -145,6 +145,7 @@ export default function Page() {
                                     </Button>
                                 </DialogClose>
                                 <Button
+                                    loading={isFinding}
                                     className="w-full"
                                     onClick={() => {
                                         handleFindBuddy()

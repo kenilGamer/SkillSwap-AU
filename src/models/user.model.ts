@@ -146,7 +146,7 @@ userSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', str
 
 // Add virtual for follower count
 // eslint-disable-next-line no-unused-vars
-userSchema.virtual('followerCount').get(function(this: any) {
+userSchema.virtual('followerCount').get(function(this: IUser) {
     if (!this || typeof this !== 'object') return 0;
     const followers = this.followers;
     return Array.isArray(followers) ? followers.length : 0;
@@ -154,7 +154,7 @@ userSchema.virtual('followerCount').get(function(this: any) {
 
 // Add virtual for following count
 // eslint-disable-next-line no-unused-vars
-userSchema.virtual('followingCount').get(function(this: any) {
+userSchema.virtual('followingCount').get(function(this: IUser) {
     if (!this || typeof this !== 'object') return 0;
     const following = this.following;
     return Array.isArray(following) ? following.length : 0;

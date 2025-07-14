@@ -15,7 +15,13 @@ import axios from 'axios';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { MdDelete, MdOutlineReport } from 'react-icons/md';
 
-export default function ChatCard({ data }: { data: any }) {
+interface ChatCardData {
+  _id: string;
+  username: string;
+  lastMessage?: { content: string };
+}
+
+export default function ChatCard({ data }: { data: ChatCardData }) {
   const { user } = useSnapshot(userStore);
 
   // Determine the chat user's name from the passed data prop.
@@ -31,7 +37,7 @@ export default function ChatCard({ data }: { data: any }) {
     try {
       await axios.delete(`/api/chat/${data._id}`);
       // Remove chat from chatStore.chats
-      chatStore.setChats(chatStore.chats.filter((c: any) => c._id !== data._id));
+      chatStore.setChats(chatStore.chats.filter((c: ChatCardData) => c._id !== data._id));
       // Optionally, clear openedChat if it was deleted
       if (chatStore.openedChat?._id === data._id) {
         chatStore.setOpenedChat(null);

@@ -21,7 +21,7 @@ export default function ChatPanel() {
   const chatBox = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<{ sender: string; content: string }[]>([]);
   const [input, setInput] = useState("");
-  const [chatPartner, setChatPartner] = useState<any>(null);
+  const [chatPartner, setChatPartner] = useState<{ username?: string; name?: string } | null>(null);
 
   // Listen for socket messages
   useEffect(() => {

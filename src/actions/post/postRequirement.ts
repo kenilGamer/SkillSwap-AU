@@ -7,12 +7,17 @@ import { z } from 'zod'
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth/[...nextauth]/options";
 
+interface User {
+    _id?: string;
+    id?: string;
+}
+
 export default async function postRequirement(data: z.infer<typeof postValidation>) {
   // Get the current user
   const res = await auth.getCurrentUser()
   console.log(res);
   
-  if (res.error || !res.user || (!(res.user as any)._id && !(res.user as any).id)) return { error: 'User not found or not authenticated' }
+  if (res.error || !res.user || (!(res.user as User)._id && !(res.user as User).id)) return { error: 'User not found or not authenticated' }
   
   // Validate incoming data using Zod
   const value = postValidation.safeParse(data)
@@ -20,7 +25,7 @@ export default async function postRequirement(data: z.infer<typeof postValidatio
 
   try {
     // Create the post with all validated fields and add the owner's ID
-    await Post.create({ ...value.data, owner: (res.user as any).id })
+    await Post.create({ ...value.data, owner: (res.user as User).id })
     return { success: 'Requirement has been posted' }
   } catch (error) {
     return { message: 'Something went wrong', error: error instanceof Error ? error.message : String(error) };

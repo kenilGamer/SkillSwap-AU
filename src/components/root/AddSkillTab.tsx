@@ -79,7 +79,7 @@ export default function AddSkillTab({ selectedSkills, setSelectedSkills, skillSe
                 />
                 {skillDropdownOpen && (
                     <div className="absolute top-10 h-32 w-full overflow-auto rounded-md bg-white p-2 text-sm shadow-lg">
-                        {(skillSearchInput ? miniSearch.search(skillSearchInput) : skills).map(({ text }: any, i) => (
+                        {(skillSearchInput ? miniSearch.search(skillSearchInput) : skills).map(({ text }: { text: string }, i) => (
                             <div
                                 onClick={() => addSkill(text)}
                                 key={i}

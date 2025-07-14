@@ -13,7 +13,7 @@ export default async function layout({ children }: { children: React.ReactNode }
         <div className="flex h-screen w-full">
             <Navbar />
             <div className="flex-1 overflow-auto">
-                {res.user && <SetUser user={formatUser(res.user as any)} />}
+                {res.user && <SetUser user={formatUser(res.user as IUserClient)} />}
                 
                 {children}
             </div>

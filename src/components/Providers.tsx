@@ -2,7 +2,7 @@
 
 import { SessionProvider } from 'next-auth/react';
 import { Toaster } from '@/components/shadcn/ui/sonner';
-import { LoaderProvider, LoaderOverlay } from '@/components/GlobalLoader';
+
 import ReduxProvider from '@/components/ReduxProvider';
 import ProgressBar from '@/components/ProgressBar';
 
@@ -12,13 +12,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             <ProgressBar />
             <Toaster richColors />
             <ReduxProvider>
-                <LoaderProvider>
-                    <LoaderOverlay />
-                    <main className="min-h-screen">
-                        {children}
-                    </main>
-                    {/* <NotificationToast /> */}
-                </LoaderProvider>
+                <main className="min-h-screen">
+                    {children}
+                </main>
+                {/* <NotificationToast /> */}
             </ReduxProvider>
         </SessionProvider>
     );

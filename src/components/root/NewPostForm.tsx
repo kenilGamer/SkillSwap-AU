@@ -15,11 +15,17 @@ import { MdDescription } from 'react-icons/md'
 import { BiCategory } from 'react-icons/bi'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 
+interface FormErrors {
+  requiredSkills?: string[];
+  description?: string[];
+  category?: string[];
+}
+
 export default function NewPostForm() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
   const [skillSearchInput, setSkillSearchInput] = useState('')
   const [description, setDescription] = useState('')
-  const [error, setError] = useState<any>({})
+  const [error, setError] = useState<FormErrors>({})
   const [category, setCategory] = useState('Select Category')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()

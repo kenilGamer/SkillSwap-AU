@@ -2,13 +2,18 @@ import { Server as NetServer } from 'http';
 import { Server as ServerIO } from 'socket.io';
 import { NextResponse } from 'next/server';
 
+declare global {
+  var io: ServerIO | undefined;
+  var server: NetServer | undefined;
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    if (!(global as any).io) {
+    if (!global.io) {
       console.log('New Socket.io server...');
-      const httpServer: NetServer = (global as any).server || new NetServer();
+      const httpServer: NetServer = global.server || new NetServer();
       const io = new ServerIO(httpServer, {
         path: '/api/socket',
         addTrailingSlash: false,
@@ -41,8 +46,8 @@ export async function GET() {
         });
       });
 
-      (global as any).io = io;
-      (global as any).server = httpServer;
+      global.io = io;
+      global.server = httpServer;
     }
 
     return new NextResponse(null, {

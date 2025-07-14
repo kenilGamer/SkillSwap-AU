@@ -28,7 +28,7 @@ export default function Page() {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
-    async function onSubmit(values: any) {
+    async function onSubmit(values: z.infer<typeof userSignupValidation>) {
         setError('')
         setLoading(true)
         const res = await Signup(values)

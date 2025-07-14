@@ -5,14 +5,16 @@ import { Resource } from '@/models/Post.model';
 import dbConnect from '@/helpers/dbconnect';
 import mongoose from 'mongoose';
 
-export const dynamic = "force-dynamic";
+interface SessionUser {
+  id: string;
+}
 
+export const dynamic = "force-dynamic";
 export async function GET() {
   await dbConnect();
   const resources = await Resource.find().populate('owner', 'name image');
   return NextResponse.json(resources);
 }
-
 export async function POST(req: NextRequest) {
   await dbConnect();
   const session = await getServerSession(authOptions);
@@ -22,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (!title || !description || !link) {
     return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   }
-  const owner = (session.user as any)._id;
+  const owner = (session.user as SessionUser).id;
   try {
     const resource = await Resource.create({ title, description, link, tags, owner });
     const populatedResource = await Resource.findById(resource._id).populate('owner', 'name image');
@@ -44,7 +46,7 @@ export async function PATCH(req: NextRequest) {
   }
   const resource = await Resource.findById(id);
   if (!resource) return NextResponse.json({ message: 'Resource not found' }, { status: 404 });
-  if (resource.owner.toString() !== (session.user as any)._id) {
+  if (resource.owner.toString() !== (session.user as SessionUser).id) {
     return NextResponse.json({ message: 'Not authorized' }, { status: 403 });
   }
   if (title) resource.title = title;
@@ -72,7 +74,7 @@ export async function DELETE(req: NextRequest) {
   }
   const resource = await Resource.findById(id);
   if (!resource) return NextResponse.json({ message: 'Resource not found' }, { status: 404 });
-  if (resource.owner.toString() !== (session.user as any)._id) {
+  if (resource.owner.toString() !== (session.user as SessionUser).id) {
     return NextResponse.json({ message: 'Not authorized' }, { status: 403 });
   }
   try {

@@ -32,7 +32,7 @@ export default function Profile({ posts }: { posts: IPost[] }) {
                         {user?.image ? (
                             <img
                                 className="h-32 w-32 object-cover"
-                                src={user?.image || '/avatar/default.png'}
+                                src={user?.image  || '/public/avatar/user1.png'}
                                 alt="Profile photo"
                             />
                         ) : (

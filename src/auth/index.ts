@@ -3,8 +3,16 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/auth/[...nextauth]/options';
 import Session from './session.model'
 
+interface SessionUser {
+    id: string;
+    name?: string;
+    email?: string;
+    image?: string;
+    _id?: string; // Keep _id for backward compatibility if needed
+}
+
 interface IAuthConstructor {
-    dbconnect: () => Promise<any>
+    dbconnect: () => Promise<void>;
 }
 
 class Auth {
@@ -35,7 +43,7 @@ class Auth {
             const session = await this.getCurrentSession()
             if (!session?.user) return { error: 'Not authenticated' }
             await this.dbconnect()
-            await Session.deleteMany({ user: (session.user as any)._id })
+            await Session.deleteMany({ user: (session.user as SessionUser).id })
             return { success: 'Deleted current user session' }
         } catch (error) {
             return { error: "Couldn't delete current user session" }
@@ -47,7 +55,7 @@ class Auth {
             const session = await this.getCurrentSession()
             if (!session?.user) return { error: 'Not authenticated' }
             await this.dbconnect()
-            await Session.deleteMany({ user: (session.user as any)._id })
+            await Session.deleteMany({ user: (session.user as SessionUser).id })
             return { success: 'Deleted all sessions for current user' }
         } catch (error) {
             return { error: "Couldn't delete current user sessions" }
@@ -93,7 +101,7 @@ class Auth {
     async getCurrentUser() {
         const session = await this.getCurrentSession();
         if (!session?.user) return { error: 'Not authenticated' };
-        return { user: { ...session.user, id: (session.user as any).id || (session.user as any)._id } };
+        return { user: { ...session.user, id: (session.user as SessionUser).id || (session.user as SessionUser)._id } };
     }
 }
 

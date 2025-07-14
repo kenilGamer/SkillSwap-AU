@@ -9,10 +9,18 @@ import ChatPanel from './ChatPanel'
 import axios from 'axios'
 import { useSearchParams } from 'next/navigation'
 
+interface ChatData {
+  _id: string;
+  username: string;
+  name?: string;
+  message?: string;
+  lastMessage?: { content: string };
+}
+
 export default function Chat() {
   const [showUnsavedChats, setShowUnsavedChats] = useState(false)
-  const [chats, setChats] = useState<any[]>([])
-  const [filteredChats, setFilteredChats] = useState<any[]>([])
+  const [chats, setChats] = useState<ChatData[]>([])
+  const [filteredChats, setFilteredChats] = useState<ChatData[]>([])
   const [query, setQuery] = useState('')
   const searchParams = useSearchParams()
   const sender = searchParams?.get('sender')

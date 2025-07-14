@@ -6,7 +6,9 @@ import User from '@/models/user.model'
 import { userLoginValidation } from '@/validations/user.validation'
 import argon from 'argon2'
 
-export default async function Login(values: any) {
+import { z } from 'zod'
+
+export default async function Login(values: z.infer<typeof userLoginValidation>) {
     const db = await dbconnect()
     if (db.error) return { error: 'Something went wrong' }
 

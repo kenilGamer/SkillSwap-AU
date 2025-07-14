@@ -29,14 +29,15 @@ interface SettingsData {
   lastUpdated: string;
 }
 
-export default function SettingsPage() {
+export default function  SettingsPage() {
   const { data: session, status } = useSession();
+  
   const router = useRouter();
   const [settings, setSettings] = useState<SettingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+ 
   const fetchSettings = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/settings', {
@@ -48,6 +49,7 @@ export default function SettingsPage() {
       
       if (!response.ok) {
         if (response.status === 401) {
+          alert("error");
           router.push('/login');
           return;
         }
@@ -69,8 +71,10 @@ export default function SettingsPage() {
       router.push('/login');
       return;
     }
-
+    
     if (status === 'authenticated' && session?.user?.role !== 'admin') {
+      console.log(session.user);
+      
       router.push('/');
       return;
     }

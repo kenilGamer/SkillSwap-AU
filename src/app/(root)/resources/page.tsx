@@ -430,7 +430,7 @@ export default function ResourcesPage() {
                   <span className="ml-2 text-xs text-gray-400">{new Date(r.createdAt).toLocaleString()}</span>
                 </div>
                 {/* Popover for actions */}
-                {r.owner && (r.owner as any)._id === currentUserId && (
+                {r.owner && r.owner._id === currentUserId && (
                   <Popover>
                     <PopoverTrigger asChild>
                       <button className="p-2 rounded-full hover:bg-blue-50 transition" aria-label="More actions">

@@ -19,7 +19,7 @@ export default async function Signup(values: z.infer<typeof userSignupValidation
         const res = await auth.createSession({ userId: user._id.toString(), expiresIn: 1000 * 60 * 60 * 24 * 30 })
         if (res.error) return { error: res.error }
         return { success: 'Account created successfully' }
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (error.code === 11000) {
             if (error.keyValue?.username) return { error: 'Username already in use' }
             return { error: 'Email already in use' }
